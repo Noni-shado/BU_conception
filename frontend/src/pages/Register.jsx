@@ -25,20 +25,25 @@ export default function Register() {
     e.preventDefault();
     setErr("");
     setLoading(true);
-    try {
-      // Backend actuel: /auth/register?email=...&password=...
-      await http.post("/auth/register", null, { params: { email, password } });
+try {
+  await http.post("/auth/register", {
+    email,
+    mot_de_passe: password,
+    nom_complet: fullName,
+    role: role
+  });
 
-      // (option) si tu veux aussi stocker full_name/role côté backend plus tard
-      // on le fera quand on améliorera l'API
-
-      alert("Compte créé ✅ Tu peux te connecter.");
-      nav("/login");
-    } catch (e2) {
-      setErr(e2?.response?.data?.detail || e2?.response?.data || "Inscription impossible");
-    } finally {
-      setLoading(false);
-    }
+  alert("Compte créé ✅ Tu peux te connecter.");
+  nav("/login");
+} catch (e2) {
+  setErr(
+    e2?.response?.data?.detail ||
+      JSON.stringify(e2?.response?.data) ||
+      "Inscription impossible"
+  );
+} finally {
+  setLoading(false);
+}
   };
 
   return (

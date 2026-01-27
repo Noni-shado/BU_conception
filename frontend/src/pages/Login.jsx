@@ -23,22 +23,30 @@ export default function Login() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setErr("");
-    setLoading(true);
-    try {
-      // Backend actuel accepte params: /auth/login?email=...&password=...
-      await http.post("/auth/login", null, { params: { email, password } });
-      // plus tard on mettra JWT + redirect dashboard
-      nav("/");
-      alert("Connexion OK ✅");
-    } catch (e2) {
-      setErr(e2?.response?.data?.detail || e2?.response?.data || "Connexion impossible");
-    } finally {
-      setLoading(false);
-    }
-  };
+const submit = async (e) => {
+  e.preventDefault();
+  setErr("");
+  setLoading(true);
+  try {
+    const res = await http.post("/auth/login", {
+      email,
+      mot_de_passe: password,
+    });
+
+    const role = res.data?.role;
+    localStorage.setItem("role", role || "UTILISATEUR");
+    localStorage.setItem("utilisateur_id", String(res.data?.id ?? ""));
+    localStorage.setItem("email", res.data?.email ?? "");
+
+    if (role === "BIBLIOTHECAIRE") nav("/biblio");
+    else nav("/"); // ou /user
+  } catch (e2) {
+    setErr(e2?.response?.data?.detail || "Connexion impossible");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <AuthShell

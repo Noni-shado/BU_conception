@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.models import Base
 from app.db.session import engine
 from app.routers.auth import router as auth_router
+from app.routers.bibliothecaire import router as router_bibliothecaire
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(router_bibliothecaire)
