@@ -21,6 +21,8 @@ export default function Register() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
+  console.log({role})
+
   const submit = async (e) => {
     e.preventDefault();
     setErr("");

@@ -83,7 +83,6 @@ export default function Livres() {
 
   return (
     <Paper elevation={0} sx={{ p: 3, border: "1px solid #E6EAF2", borderRadius: 3 }}>
-      {/* Header */}
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" mb={2}>
         <Typography variant="h5" fontWeight={900} sx={{ flex: 1 }}>
           Livres
