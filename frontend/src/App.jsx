@@ -6,7 +6,7 @@ import Register from "./pages/authentification/Register";
 
 // Bibliothécaire
 import BiblioLayout from "./layout/BiblioLayout";
-import Livres from "./pages/biblio/Livres";
+import Livres from "./pages/biblio/livres/Livres";
 import Emprunts from "./pages/biblio/emprunts/Emprunts";
 import Retours from "./pages/biblio/retours/Retours";
 

@@ -9,7 +9,12 @@ import {
   TableRow,
   Paper,
   Chip,
-  TablePagination
+  TablePagination,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 export const TableUI = ({
@@ -17,7 +22,10 @@ export const TableUI = ({
   dataCells = [],
   renderActions,
   Header,
-  chipData = {}
+  chipData = {},
+  filters = [],
+  filterValues = {},
+  onFilterChange,
 }) => {
   const { getColor, getLabel } = chipData;
 
@@ -49,10 +57,40 @@ export const TableUI = ({
         p: 3,
         border: "1px solid #E6EAF2",
         borderRadius: 1,
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       {Header}
+
+      {filters.length > 0 && (
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          mb={2}
+          justifyContent="flex-end"
+        >
+          {filters.map((filter) => (
+            <FormControl
+              key={filter.key}
+              size="small"
+              sx={{ minWidth: filter.minWidth || 180 }}
+            >
+              <InputLabel>{filter.label}</InputLabel>
+              <Select
+                value={filterValues[filter.key] ?? ""}
+                label={filter.label}
+                onChange={(e) => onFilterChange?.(filter.key, e.target.value)}
+              >
+                {(filter.options || []).map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ))}
+        </Stack>
+      )}
 
       <TableContainer sx={{ overflowX: "auto" }}>
         <Table sx={{ minWidth: 900 }}>
@@ -65,7 +103,7 @@ export const TableUI = ({
                   sx={{
                     fontWeight: 700,
                     fontSize: "1rem",
-                    color: "#111827"
+                    color: "#111827",
                   }}
                 >
                   {cel.name}
@@ -80,18 +118,18 @@ export const TableUI = ({
                 key={data.id}
                 hover
                 sx={{
-                  "&:last-child td": { borderBottom: 0 }
+                  "&:last-child td": { borderBottom: 0 },
                 }}
               >
                 {cells.map((cel) => (
                   <TableCell
                     key={cel.key}
                     align={cel.key === "actions" ? "center" : "left"}
-                   sx={{
-  py: 0.5, // réduit hauteur
-  fontSize: "0.92rem", // un peu plus compact
-  verticalAlign: "middle"
-}}
+                    sx={{
+                      py: 0.5,
+                      fontSize: "0.92rem",
+                      verticalAlign: "middle",
+                    }}
                   >
                     {cel.key === "actions" && renderActions ? (
                       renderActions(data)
@@ -104,10 +142,10 @@ export const TableUI = ({
                         sx={{
                           fontSize: "0.75rem",
                           height: 28,
-                          fontWeight: 500
+                          fontWeight: 500,
                         }}
                       />
-                    ) : cel.key === "date" ? (
+                    ) : cel.key === "date" || cel.key.includes("date") ? (
                       formatDate(data[cel.key])
                     ) : (
                       data[cel.key] ?? "-"
@@ -145,8 +183,8 @@ export const TableUI = ({
         sx={{
           mt: 2,
           ".MuiTablePagination-toolbar": {
-            px: 0
-          }
+            px: 0,
+          },
         }}
       />
     </Paper>

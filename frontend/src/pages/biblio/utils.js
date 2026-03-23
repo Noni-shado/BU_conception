@@ -15,7 +15,6 @@ export const EMPRUNT_STATUS_CONFIG = {
 export const RETOUR_STATUS = {
     EN_ATTENTE: "EN_ATTENTE",
     RETOURNE: "RETOURNE",
-    REFUSE: "REFUSE",
 };
 
 export const RETOUR_STATUS_CONFIG = {
@@ -26,9 +25,5 @@ export const RETOUR_STATUS_CONFIG = {
     [RETOUR_STATUS.RETOURNE]: {
         label: "Retourné",
         color: "success",
-    },
-    [RETOUR_STATUS.REFUSE]: {
-        label: "Refusé",
-        color: "error",
-    },
+    }
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { http } from "../../api/http";
+import { http } from "../../../api/http";
 import {
   Button,
   Stack,
@@ -14,13 +14,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import { AjouterLivreDialog } from "./Dialog/AjouterLivreDialog";
-import { ModifierLivreDialog } from "./Dialog/ModifierLivreDialog";
-import { DetailsLivreDialog } from "./Dialog/DetailsLivreDialog";
-import { TableUI } from "../../components/TableUI/TableUI";
-import { Header } from "../../components/TableUI/Header";
-import { ConfirmDialog } from "../../components/ConfirmDialog";
-import {AppSnackbar} from "../../components/AppSnackBar";
+import { AjouterLivreDialog } from "./AjouterLivreDialog";
+import { ModifierLivreDialog } from "./ModifierLivreDialog";
+import { DetailsLivreDialog } from "./DetailsLivreDialog";
+import { TableUI } from "../../../components/TableUI/TableUI";
+import { Header } from "../../../components/TableUI/Header";
+import { ConfirmDialog } from "../../../components/ConfirmDialog";
+import {AppSnackbar} from "../../../components/AppSnackBar";
 
 export default function Livres() {
   const [q, setQ] = useState("");
