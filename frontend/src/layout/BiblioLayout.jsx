@@ -2,7 +2,7 @@ import React from "react";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import {Header} from '../components/Header';
+import { Header } from "../components/Header";
 import DrawerLayout from "./DrawerLayout";
 
 const items = [
@@ -12,13 +12,13 @@ const items = [
 ];
 
 export default function BiblioLayout() {
-
   return (
-    <DrawerLayout 
-    renderHeader={(props) => <Header {...props} title="Dashboard Bibliothécaire"  />}
-    items={items}
-    title="BU"
-    subTitle="Bibliothécaire"
+    <DrawerLayout
+      renderHeader={(props) => (
+        <Header {...props} title="Dashboard Bibliothécaire" />
+      )}
+      items={items}
+      subTitle="Bibliothécaire"
     />
-  )
+  );
 }
