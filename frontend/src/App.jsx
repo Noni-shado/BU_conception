@@ -1,13 +1,13 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Login from "./pages/authentification/Login";
+import Register from "./pages/authentification/Register";
 
 // Bibliothécaire
 import BiblioLayout from "./layout/BiblioLayout";
 import Livres from "./pages/biblio/Livres";
-import Emprunts from "./pages/biblio/Emprunts";
+import Emprunts from "./pages/biblio/emprunts/Emprunts";
 import Retours from "./pages/biblio/Retours";
 
 // Guard rôle (optionnel mais conseillé)
@@ -32,7 +32,6 @@ export default function App() {
           </RequireRole>
         }
       >
-        {/* /biblio => livres */}
         <Route index element={<Livres />} />
         <Route path="emprunts" element={<Emprunts />} />
         <Route path="retours" element={<Retours />} />

@@ -2,18 +2,11 @@ import React, { useEffect, useState } from "react";
 import { http } from "../../api/http";
 import {
   Button,
-  Paper,
   Stack,
   TextField,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Chip,
   IconButton,
   Tooltip,
+  Box,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -21,9 +14,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import AjouterLivreDialog from "./AjouterLivreDialog";
-import ModifierLivreDialog from "./ModifierLivreDialog";
-import DetailsLivreDialog from "./DetailsLivreDialog";
+import {AjouterLivreDialog} from "./Dialog/AjouterLivreDialog";
+import {ModifierLivreDialog} from "./Dialog/ModifierLivreDialog";
+import {DetailsLivreDialog} from "./Dialog/DetailsLivreDialog";
+import { TableUI } from "../../components/TableUI/TableUI";
+import { Header } from "../../components/TableUI/Header";
 
 export default function Livres() {
   const [q, setQ] = useState("");
@@ -31,12 +26,18 @@ export default function Livres() {
   const [loading, setLoading] = useState(false);
 
   const [openAdd, setOpenAdd] = useState(false);
-
   const [openEdit, setOpenEdit] = useState(false);
   const [livreSelectionne, setLivreSelectionne] = useState(null);
-
   const [openDetails, setOpenDetails] = useState(false);
   const [livreDetails, setLivreDetails] = useState(null);
+
+  const cells = [
+    { key: "titre", name: "Titre" },
+    { key: "auteur", name: "Auteur" },
+    { key: "isbn", name: "ISBN" },
+    { key: "disponibilite", name: "Disponibilité" },
+    { key: "actions", name: "Actions" },
+  ];
 
   const charger = async () => {
     setLoading(true);
@@ -50,9 +51,14 @@ export default function Livres() {
     }
   };
 
+
   useEffect(() => {
+  const delay = setTimeout(() => {
     charger();
-  }, []);
+  }, 500);
+
+  return () => clearTimeout(delay);
+}, [q]);
 
   const ouvrirEdition = (livre) => {
     setLivreSelectionne(livre);
@@ -68,105 +74,92 @@ export default function Livres() {
     if (!livre?.id) return;
 
     const ok = window.confirm(
-      `Supprimer le livre : "${livre.titre}" ?\nCette action est irréversible.`
+      `Supprimer le livre : "${livre.titre}" ?`
     );
     if (!ok) return;
 
-    try {
-      await http.delete(`/bibliothecaire/livres/${livre.id}`);
-      await charger();
-    } catch (e) {
-      console.error(e);
-      alert(e?.response?.data?.detail || "Suppression impossible.");
-    }
+    await http.delete(`/bibliothecaire/livres/${livre.id}`);
+    await charger();
   };
 
-  return (
-    <Paper elevation={0} sx={{ p: 3, border: "1px solid #E6EAF2", borderRadius: 3 }}>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight={900} sx={{ flex: 1 }}>
-          Livres
-        </Typography>
+  const dataCells = livres.map((l) => ({
+    ...l,
+    isbn: l.isbn || "-",
+    disponibilite: `${l.nb_disponible}/${l.nb_total}`,
+  }));
 
+  const tableHeader = (
+    <Header
+      title="Livres"
+      Action={
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setOpenAdd(true)}
-          sx={{ fontWeight: 800 }}
         >
-          Ajouter un livre
+          Ajouter
         </Button>
-      </Stack>
+      }
+    />
+  );
 
+  return (
+    <>
       {/* Search */}
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center" mb={2}>
-        <TextField
-          size="small"
-          label="Rechercher (titre / auteur / isbn)"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          fullWidth
-        />
-        <Button variant="outlined" onClick={charger} disabled={loading}>
-          {loading ? "Chargement..." : "Rechercher"}
-        </Button>
-      </Stack>
+<Stack
+  component="form"
+  onSubmit={(e) => {
+    e.preventDefault(); // 🚫 empêche reload
+    charger();
+  }}
+  direction={{ xs: "column", sm: "row" }}
+  spacing={2}
+  mb={2}
+>
+  <TextField
+    size="small"
+    label="Rechercher"
+    value={q}
+    onChange={(e) => setQ(e.target.value)}
+    fullWidth
+    autoFocus   
+  />
 
-      {/* Table */}
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Titre</TableCell>
-            <TableCell>Auteur</TableCell>
-            <TableCell>ISBN</TableCell>
-            <TableCell>Disponibilité</TableCell>
-            <TableCell align="right">Actions</TableCell>
-          </TableRow>
-        </TableHead>
+  <Button
+    type="submit"   
+    variant="outlined"
+    disabled={loading}
+  >
+    Rechercher
+  </Button>
+</Stack>
 
-        <TableBody>
-          {livres.map((l) => (
-            <TableRow key={l.id}>
-              <TableCell>{l.id}</TableCell>
-              <TableCell>{l.titre}</TableCell>
-              <TableCell>{l.auteur}</TableCell>
-              <TableCell>{l.isbn || "-"}</TableCell>
-              <TableCell>
-                <Chip label={`${l.nb_disponible}/${l.nb_total}`} variant="outlined" />
-              </TableCell>
+      <TableUI
+        Header={tableHeader}
+        cells={cells}
+        dataCells={dataCells}
+        renderActions={(livre) => (
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+            <Tooltip title="Détails">
+              <IconButton color="primary" onClick={() => ouvrirDetails(livre)}>
+                <VisibilityIcon />
+              </IconButton>
+            </Tooltip>
 
-              <TableCell align="right">
-                <Tooltip title="Détails">
-                  <IconButton onClick={() => ouvrirDetails(l)}>
-                     <VisibilityIcon />
-                  </IconButton>
-                </Tooltip>
+            <Tooltip title="Modifier">
+              <IconButton color="primary" onClick={() => ouvrirEdition(livre)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
 
-                <Tooltip title="Modifier">
-                  <IconButton onClick={() => ouvrirEdition(l)}>
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Supprimer">
-                  <IconButton onClick={() => supprimer(l)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </TableCell>
-            </TableRow>
-          ))}
-
-          {livres.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={6}>
-                <Typography color="text.secondary">Aucun livre trouvé.</Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            <Tooltip title="Supprimer">
+              <IconButton color="error" onClick={() => supprimer(livre)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+      />
 
       {/* Dialogs */}
       <AjouterLivreDialog
@@ -187,6 +180,6 @@ export default function Livres() {
         livre={livreDetails}
         onClose={() => setOpenDetails(false)}
       />
-    </Paper>
+    </>
   );
 }

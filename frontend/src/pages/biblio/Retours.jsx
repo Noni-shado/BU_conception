@@ -1,13 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { http } from "../../api/http";
-import {
-  Button, Paper, Stack, Typography,
-  Table, TableBody, TableCell, TableHead, TableRow
-} from "@mui/material";
+import { TableUI } from "../../components/TableUI/TableUI";
+import { Header } from "../../components/TableUI/Header";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { RETOUR_STATUS, RETOUR_STATUS_CONFIG } from "./utils";
 
 export default function Retours() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const cells = [
+    { key: "livre_id", name: "Livre" },
+    { key: "utilisateur_id", name: "Utilisateur" },
+    { key: "retournee", name: "Retourné" },
+    { key: "statut", name: "Statut" },
+    { key: "actions", name: "Action" },
+  ];
+
+  const dataCells = [
+  {
+    id: 1,
+    livre_id: 10,
+    utilisateur_id: 5,
+    retournee: "non",
+    statut: "EN_ATTENTE"
+  },
+  {
+    id: 2,
+    livre_id: 12,
+    utilisateur_id: 7,
+    retournee: "oui",
+    statut: "RETOURNE"
+  }
+]
+
+  useEffect(() => {
+    charger();
+  }, []);
+
 
   const charger = async () => {
     setLoading(true);
@@ -24,52 +56,63 @@ export default function Retours() {
     await charger();
   };
 
-  useEffect(() => { charger(); }, []);
 
-  return (
-    <Paper elevation={0} sx={{ p: 3, border: "1px solid #E6EAF2", borderRadius: 3 }}>
-      <Stack direction="row" alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight={900} sx={{ flex: 1 }}>
-          Retours
-        </Typography>
-        <Button onClick={charger} disabled={loading}>
+  const getColor = (data)=>{
+      console.log({data, d: RETOUR_STATUS[data] })
+
+    return RETOUR_STATUS_CONFIG[data].color ?? "default"
+  }
+  
+  const getLabel = (data)=>{
+    console.log({data, d: RETOUR_STATUS[data] })
+  
+    return RETOUR_STATUS_CONFIG[data].label ?? "-"
+  }
+    const voirDetails = (row) => {
+    console.log("details retour", row);
+  };
+
+
+
+
+  const tableHeader = (
+    <Header
+      title="Retours"
+      Action={
+        <Button onClick={charger} disabled={loading} variant="outlined">
           Rafraîchir
         </Button>
-      </Stack>
+      }
+    />
+  );
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Livre</TableCell>
-            <TableCell>Utilisateur</TableCell>
-            <TableCell>Retourné ?</TableCell>
-            <TableCell>Statut</TableCell>
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((r) => (
-            <TableRow key={r.id}>
-              <TableCell>{r.id}</TableCell>
-              <TableCell>{r.livre_id}</TableCell>
-              <TableCell>{r.utilisateur_id}</TableCell>
-              <TableCell>{r.retourne_le ? "Oui" : "Non"}</TableCell>
-              <TableCell>{r.statut}</TableCell>
-              <TableCell>
-                <Button
-                  variant="contained"
-                  size="small"
-                  disabled={!r.retourne_le || r.statut === "RETOURNE"}
-                  onClick={() => valider(r.id)}
-                >
-                  Valider retour
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
+  return (
+    <TableUI
+      Header={tableHeader}
+      cells={cells}
+      dataCells={dataCells}
+      chipData={{ getColor, getLabel }}
+      renderActions={(row) => (
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+          <Tooltip title="Voir détails">
+            <IconButton color="primary" onClick={() => voirDetails(row)}>
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Valider retour">
+            <span>
+              <IconButton
+                color="success"
+                disabled={!row.retournee || row.statut === RETOUR_STATUS.RETOURNE}
+                onClick={() => valider(row.id)}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
+      )}
+    />
   );
 }

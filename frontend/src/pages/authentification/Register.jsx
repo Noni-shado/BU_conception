@@ -9,8 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import AuthShell from "../components/AuthShell";
-import { http } from "../api/http";
+import AuthShell from "../../components/AuthShell";
+import { http } from "../../api/http";
 
 export default function Register() {
   const nav = useNavigate();

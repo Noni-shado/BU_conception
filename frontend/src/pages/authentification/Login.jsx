@@ -12,8 +12,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import AuthShell from "../components/AuthShell";
-import { http } from "../api/http";
+import AuthShell from "../../components/AuthShell";
+import { http } from "../../api/http";
 
 export default function Login() {
   const nav = useNavigate();
