@@ -87,11 +87,11 @@ export const TableUI = ({
                   <TableCell
                     key={cel.key}
                     align={cel.key === "actions" ? "center" : "left"}
-                    sx={{
-                      py: 2.2,
-                      fontSize: "0.98rem",
-                      verticalAlign: "middle"
-                    }}
+                   sx={{
+  py: 0.5, // réduit hauteur
+  fontSize: "0.92rem", // un peu plus compact
+  verticalAlign: "middle"
+}}
                   >
                     {cel.key === "actions" && renderActions ? (
                       renderActions(data)

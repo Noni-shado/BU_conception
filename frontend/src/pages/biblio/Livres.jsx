@@ -14,11 +14,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import {AjouterLivreDialog} from "./Dialog/AjouterLivreDialog";
-import {ModifierLivreDialog} from "./Dialog/ModifierLivreDialog";
-import {DetailsLivreDialog} from "./Dialog/DetailsLivreDialog";
+import { AjouterLivreDialog } from "./Dialog/AjouterLivreDialog";
+import { ModifierLivreDialog } from "./Dialog/ModifierLivreDialog";
+import { DetailsLivreDialog } from "./Dialog/DetailsLivreDialog";
 import { TableUI } from "../../components/TableUI/TableUI";
 import { Header } from "../../components/TableUI/Header";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
+import {AppSnackbar} from "../../components/AppSnackBar";
 
 export default function Livres() {
   const [q, setQ] = useState("");
@@ -30,6 +32,16 @@ export default function Livres() {
   const [livreSelectionne, setLivreSelectionne] = useState(null);
   const [openDetails, setOpenDetails] = useState(false);
   const [livreDetails, setLivreDetails] = useState(null);
+
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [selectedLivre, setSelectedLivre] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const cells = [
     { key: "titre", name: "Titre" },
@@ -46,19 +58,24 @@ export default function Livres() {
         params: q ? { q } : {},
       });
       setLivres(res.data);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erreur lors du chargement des livres.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-
   useEffect(() => {
-  const delay = setTimeout(() => {
-    charger();
-  }, 500);
+    const delay = setTimeout(() => {
+      charger();
+    }, 500);
 
-  return () => clearTimeout(delay);
-}, [q]);
+    return () => clearTimeout(delay);
+  }, [q]);
 
   const ouvrirEdition = (livre) => {
     setLivreSelectionne(livre);
@@ -70,16 +87,48 @@ export default function Livres() {
     setOpenDetails(true);
   };
 
-  const supprimer = async (livre) => {
-    if (!livre?.id) return;
+  const supprimer = (livre) => {
+    setSelectedLivre(livre);
+    setDeleteConfirm(true);
+  };
 
-    const ok = window.confirm(
-      `Supprimer le livre : "${livre.titre}" ?`
-    );
-    if (!ok) return;
+  const handleConfirmDelete = async () => {
+    if (!selectedLivre) return;
 
-    await http.delete(`/bibliothecaire/livres/${livre.id}`);
-    await charger();
+    try {
+      setDeleteLoading(true);
+
+      await http.delete(`/bibliothecaire/livres/${selectedLivre.id}`);
+      await charger();
+
+      setSnackbar({
+        open: true,
+        message: `Le livre "${selectedLivre.titre}" a été supprimé avec succès.`,
+        severity: "success",
+      });
+
+      setDeleteConfirm(false);
+      setSelectedLivre(null);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erreur lors de la suppression du livre.",
+        severity: "error",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (deleteLoading) return;
+    setDeleteConfirm(false);
+    setSelectedLivre(null);
+  };
+
+  const handleCloseSnackbar = (_, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   const dataCells = livres.map((l) => ({
@@ -105,34 +154,29 @@ export default function Livres() {
 
   return (
     <>
-      {/* Search */}
-<Stack
-  component="form"
-  onSubmit={(e) => {
-    e.preventDefault(); // 🚫 empêche reload
-    charger();
-  }}
-  direction={{ xs: "column", sm: "row" }}
-  spacing={2}
-  mb={2}
->
-  <TextField
-    size="small"
-    label="Rechercher"
-    value={q}
-    onChange={(e) => setQ(e.target.value)}
-    fullWidth
-    autoFocus   
-  />
+      <Stack
+        component="form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          charger();
+        }}
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2}
+        mb={2}
+      >
+        <TextField
+          size="small"
+          label="Rechercher"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          fullWidth
+          autoFocus
+        />
 
-  <Button
-    type="submit"   
-    variant="outlined"
-    disabled={loading}
-  >
-    Rechercher
-  </Button>
-</Stack>
+        <Button type="submit" variant="outlined" disabled={loading}>
+          Rechercher
+        </Button>
+      </Stack>
 
       <TableUI
         Header={tableHeader}
@@ -161,24 +205,82 @@ export default function Livres() {
         )}
       />
 
-      {/* Dialogs */}
-      <AjouterLivreDialog
-        open={openAdd}
-        onClose={() => setOpenAdd(false)}
-        onSuccess={charger}
-      />
+<AjouterLivreDialog
+  open={openAdd}
+  onClose={() => setOpenAdd(false)}
+  onSuccess={async () => {
+    setOpenAdd(false);
+    await charger();
+    setSnackbar({
+      open: true,
+      message: "Le livre a été ajouté avec succès.",
+      severity: "success",
+    });
+  }}
+  onError={(message) => {
+    setSnackbar({
+      open: true,
+      message: message || "Erreur lors de l'ajout du livre.",
+      severity: "error",
+    });
+  }}
+/>
 
-      <ModifierLivreDialog
-        open={openEdit}
-        livre={livreSelectionne}
-        onClose={() => setOpenEdit(false)}
-        onSuccess={charger}
-      />
+<ModifierLivreDialog
+  open={openEdit}
+  livre={livreSelectionne}
+  onClose={() => {
+    setOpenEdit(false);
+    setLivreSelectionne(null);
+  }}
+  onSuccess={async () => {
+    setOpenEdit(false);
+    setLivreSelectionne(null);
+    await charger();
+    setSnackbar({
+      open: true,
+      message: "Le livre a été modifié avec succès.",
+      severity: "success",
+    });
+  }}
+  onError={(message) => {
+    setSnackbar({
+      open: true,
+      message: message || "Erreur lors de la modification du livre.",
+      severity: "error",
+    });
+  }}
+/>
 
       <DetailsLivreDialog
         open={openDetails}
         livre={livreDetails}
-        onClose={() => setOpenDetails(false)}
+        onClose={() => {
+          setOpenDetails(false);
+          setLivreDetails(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirm}
+        title="Supprimer le livre"
+        message={`Voulez-vous vraiment supprimer "${
+          selectedLivre?.titre ?? ""
+        }" ?`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancel}
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        loading={deleteLoading}
+        confirmColor="error"
+        type="warning"
+      />
+
+      <AppSnackbar
+        open={snackbar.open}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </>
   );

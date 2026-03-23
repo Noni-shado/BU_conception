@@ -8,7 +8,7 @@ import Register from "./pages/authentification/Register";
 import BiblioLayout from "./layout/BiblioLayout";
 import Livres from "./pages/biblio/Livres";
 import Emprunts from "./pages/biblio/emprunts/Emprunts";
-import Retours from "./pages/biblio/Retours";
+import Retours from "./pages/biblio/retours/Retours";
 
 // Guard rôle (optionnel mais conseillé)
 import RequireRole from "./components/RequireRole";

@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { http } from "../../../api/http";
-import {LivreDialogBase} from "./LivreDialogBase";
+import { LivreDialogBase } from "./LivreDialogBase";
 
-export const AjouterLivreDialog = ({ open, onClose, onSuccess })=> {
+export const AjouterLivreDialog = ({
+  open,
+  onClose,
+  onSuccess,
+  onError,
+}) => {
   const [loading, setLoading] = useState(false);
 
   const submit = async (form) => {
@@ -14,10 +19,15 @@ export const AjouterLivreDialog = ({ open, onClose, onSuccess })=> {
         isbn: form.isbn.trim() ? form.isbn.trim() : null,
         description: form.description.trim(),
         nb_total: Number(form.nb_total) || 1,
+        nb_disponible: Number(form.nb_total) || 1, // 👈 logique propre
       });
 
       onSuccess?.();
-      onClose?.();
+    } catch (e) {
+      console.error(e);
+      onError?.(
+        e?.response?.data?.detail || "Erreur lors de l'ajout du livre."
+      );
     } finally {
       setLoading(false);
     }
@@ -34,4 +44,4 @@ export const AjouterLivreDialog = ({ open, onClose, onSuccess })=> {
       isAdd
     />
   );
-}
+};

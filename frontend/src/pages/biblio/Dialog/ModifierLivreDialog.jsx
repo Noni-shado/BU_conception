@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { http } from "../../../api/http";
-import {LivreDialogBase} from "./LivreDialogBase";
+import { LivreDialogBase } from "./LivreDialogBase";
 
 export const ModifierLivreDialog = ({
   open,
   onClose,
   onSuccess,
+  onError,
   livre,
-})=> {
+}) => {
   const [loading, setLoading] = useState(false);
 
   const submit = async (form) => {
@@ -25,12 +26,10 @@ export const ModifierLivreDialog = ({
       });
 
       onSuccess?.();
-      onClose?.();
     } catch (e) {
       console.error(e);
-      alert(
-        e?.response?.data?.detail ||
-          "Erreur lors de la modification du livre."
+      onError?.(
+        e?.response?.data?.detail || "Erreur lors de la modification du livre."
       );
     } finally {
       setLoading(false);
@@ -49,4 +48,4 @@ export const ModifierLivreDialog = ({
       isEdit
     />
   );
-}
+};

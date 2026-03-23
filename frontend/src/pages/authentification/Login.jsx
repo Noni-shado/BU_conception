@@ -72,6 +72,7 @@ const submit = async (e) => {
               type="email"
               required
               fullWidth
+              autoFocus
             />
 
             <TextField
@@ -81,6 +82,7 @@ const submit = async (e) => {
               type={show ? "text" : "password"}
               required
               fullWidth
+              id="mdp"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">

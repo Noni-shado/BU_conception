@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Dialog,
@@ -28,6 +28,13 @@ export const LivreDialogBase = ({
   const [nbTotal, setNbTotal] = useState(1);
   const [nbDisponible, setNbDisponible] = useState(1);
 
+  const [errors, setErrors] = useState({
+    titre: "",
+    auteur: "",
+    nbTotal: "",
+    nbDisponible: "",
+  });
+
   const titreRef = useRef(null);
   const disabled = isDetails;
 
@@ -49,6 +56,13 @@ export const LivreDialogBase = ({
       setNbTotal(livre.nb_total ?? 1);
       setNbDisponible(livre.nb_disponible ?? 1);
     }
+
+    setErrors({
+      titre: "",
+      auteur: "",
+      nbTotal: "",
+      nbDisponible: "",
+    });
   }, [open, livre, isAdd]);
 
   useEffect(() => {
@@ -61,17 +75,121 @@ export const LivreDialogBase = ({
     return () => clearTimeout(timer);
   }, [open, isDetails]);
 
+  const initialValues = useMemo(() => {
+    if (isAdd) {
+      return {
+        titre: "",
+        auteur: "",
+        isbn: "",
+        description: "",
+        nbTotal: 1,
+        nbDisponible: 1,
+      };
+    }
+
+    return {
+      titre: livre?.titre ?? "",
+      auteur: livre?.auteur ?? "",
+      isbn: livre?.isbn ?? "",
+      description: livre?.description ?? "",
+      nbTotal: livre?.nb_total ?? 1,
+      nbDisponible: livre?.nb_disponible ?? 1,
+    };
+  }, [isAdd, livre]);
+
+  const isDirty =
+    titre !== initialValues.titre ||
+    auteur !== initialValues.auteur ||
+    isbn !== initialValues.isbn ||
+    description !== initialValues.description ||
+    Number(nbTotal) !== Number(initialValues.nbTotal) ||
+    Number(nbDisponible) !== Number(initialValues.nbDisponible);
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "titre":
+        if (!String(value).trim()) return "Ce champ est requis";
+        return "";
+
+      case "auteur":
+        if (!String(value).trim()) return "Ce champ est requis";
+        return "";
+
+      case "nbTotal":
+        if (value === "" || value === null || value === undefined) {
+          return "Ce champ est requis";
+        }
+        if (Number(value) < 0) {
+          return "La valeur doit être supérieure ou égale à 0";
+        }
+        return "";
+
+      case "nbDisponible":
+        if (isEdit || isDetails) {
+          if (value === "" || value === null || value === undefined) {
+            return "Ce champ est requis";
+          }
+          if (Number(value) < 0) {
+            return "La valeur doit être supérieure ou égale à 0";
+          }
+          if (Number(value) > Number(nbTotal)) {
+            return "Le nombre disponible ne doit pas dépasser le nombre total";
+          }
+        }
+        return "";
+
+      default:
+        return "";
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      titre: validateField("titre", titre),
+      auteur: validateField("auteur", auteur),
+      nbTotal: validateField("nbTotal", nbTotal),
+      nbDisponible: validateField("nbDisponible", nbDisponible),
+    };
+
+    setErrors(newErrors);
+
+    return !Object.values(newErrors).some(Boolean);
+  };
+
+  const isFormValid = useMemo(() => {
+    const titreValid = String(titre).trim() !== "";
+    const auteurValid = String(auteur).trim() !== "";
+    const nbTotalValid =
+      nbTotal !== "" &&
+      nbTotal !== null &&
+      nbTotal !== undefined &&
+      Number(nbTotal) >= 0;
+
+    const nbDisponibleValid =
+      !isEdit ||
+      (nbDisponible !== "" &&
+        nbDisponible !== null &&
+        nbDisponible !== undefined &&
+        Number(nbDisponible) >= 0 &&
+        Number(nbDisponible) <= Number(nbTotal));
+
+    return titreValid && auteurValid && nbTotalValid && nbDisponibleValid;
+  }, [titre, auteur, nbTotal, nbDisponible, isEdit]);
+
   const handleSubmit = () => {
     if (isDetails) {
       onClose?.();
       return;
     }
 
+    const valid = validateForm();
+    if (!valid) return;
+
     onSubmit?.({
-      titre,
-      auteur,
-      isbn,
-      description,
+      titre: titre.trim(),
+      auteur: auteur.trim(),
+      isbn: isbn.trim(),
+      description: description.trim(),
       nb_total: Number(nbTotal),
       nb_disponible: Number(nbDisponible),
     });
@@ -105,7 +223,7 @@ export const LivreDialogBase = ({
       scroll="paper"
       PaperProps={{
         sx: {
-          borderRadius: 3,
+          borderRadius: 2,
           width: "100%",
           maxWidth: 900,
         },
@@ -120,20 +238,54 @@ export const LivreDialogBase = ({
               inputRef={titreRef}
               label="Titre"
               value={titre}
-              onChange={(e) => setTitre(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setTitre(value);
+                if (errors.titre) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    titre: validateField("titre", value),
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setErrors((prev) => ({
+                  ...prev,
+                  titre: validateField("titre", titre),
+                }));
+              }}
               required={!isDetails}
               fullWidth
               disabled={disabled}
+              error={!!errors.titre}
+              helperText={errors.titre}
               sx={commonTextFieldSx}
             />
 
             <TextField
               label="Auteur"
               value={auteur}
-              onChange={(e) => setAuteur(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setAuteur(value);
+                if (errors.auteur) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    auteur: validateField("auteur", value),
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setErrors((prev) => ({
+                  ...prev,
+                  auteur: validateField("auteur", auteur),
+                }));
+              }}
               required={!isDetails}
               fullWidth
               disabled={disabled}
+              error={!!errors.auteur}
+              helperText={errors.auteur}
               sx={commonTextFieldSx}
             />
           </Stack>
@@ -152,11 +304,35 @@ export const LivreDialogBase = ({
               label="Nombre total d'exemplaires"
               type="number"
               value={nbTotal}
-              onChange={(e) => setNbTotal(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNbTotal(value);
+
+                setErrors((prev) => ({
+                  ...prev,
+                  nbTotal: prev.nbTotal ? validateField("nbTotal", value) : "",
+                  nbDisponible:
+                    isEdit && prev.nbDisponible
+                      ? validateField("nbDisponible", nbDisponible)
+                      : prev.nbDisponible,
+                }));
+              }}
+              onBlur={() => {
+                setErrors((prev) => ({
+                  ...prev,
+                  nbTotal: validateField("nbTotal", nbTotal),
+                  nbDisponible:
+                    isEdit || isDetails
+                      ? validateField("nbDisponible", nbDisponible)
+                      : prev.nbDisponible,
+                }));
+              }}
               inputProps={{ min: 0 }}
               required={!isDetails}
               fullWidth
               disabled={disabled}
+              error={!!errors.nbTotal}
+              helperText={errors.nbTotal}
               sx={commonTextFieldSx}
             />
           </Stack>
@@ -166,13 +342,30 @@ export const LivreDialogBase = ({
               label="Nombre disponible"
               type="number"
               value={nbDisponible}
-              onChange={(e) => setNbDisponible(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setNbDisponible(value);
+                if (errors.nbDisponible) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    nbDisponible: validateField("nbDisponible", value),
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setErrors((prev) => ({
+                  ...prev,
+                  nbDisponible: validateField("nbDisponible", nbDisponible),
+                }));
+              }}
               inputProps={{ min: 0 }}
               required={!isDetails}
               fullWidth
               disabled={disabled}
+              error={!!errors.nbDisponible}
               helperText={
-                isEdit ? "nb_disponible ne doit pas dépasser nb_total" : ""
+                errors.nbDisponible ||
+                (isEdit ? "nb_disponible ne doit pas dépasser nb_total" : "")
               }
               sx={commonTextFieldSx}
             />
@@ -197,11 +390,15 @@ export const LivreDialogBase = ({
         </Button>
 
         {!isDetails && (
-          <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={loading || !isDirty || !isFormValid}
+          >
             {submitLabel}
           </Button>
         )}
       </DialogActions>
     </Dialog>
   );
-}
+};
