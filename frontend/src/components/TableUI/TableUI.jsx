@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import {
   Typography,
   Table,
@@ -15,6 +15,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 
 export const TableUI = ({
@@ -26,29 +28,46 @@ export const TableUI = ({
   filters = [],
   filterValues = {},
   onFilterChange,
+  loading = false,
+
+  page = 0,
+  rowsPerPage = 5,
+  total = 0,
+  onPageChange,
+  onRowsPerPageChange,
 }) => {
   const { getColor, getLabel } = chipData;
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString("fr-FR") : "-";
 
-  const handleChangePage = (_, newPage) => {
-    setPage(newPage);
-  };
+  const renderCellContent = (cel, data) => {
+    if (cel.key === "actions" && renderActions) {
+      return renderActions(data);
+    }
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    if (typeof cel.render === "function") {
+      return cel.render(data);
+    }
 
-  const paginatedRows = useMemo(() => {
-    const start = page * rowsPerPage;
-    const end = start + rowsPerPage;
-    return dataCells.slice(start, end);
-  }, [dataCells, page, rowsPerPage]);
+    if (cel.key === "statut") {
+      return (
+        <Chip
+          label={getLabel?.(data[cel.key]) ?? "-"}
+          variant="filled"
+          color={getColor?.(data[cel.key]) ?? "default"}
+          size="small"
+          sx={{
+            fontSize: "0.75rem",
+            height: 28,
+            fontWeight: 500,
+          }}
+        />
+      );
+    }
+    
+    return data[cel.key] ?? "-";
+  };
 
   return (
     <Paper
@@ -74,6 +93,7 @@ export const TableUI = ({
               key={filter.key}
               size="small"
               sx={{ minWidth: filter.minWidth || 180 }}
+              disabled={loading}
             >
               <InputLabel>{filter.label}</InputLabel>
               <Select
@@ -113,49 +133,49 @@ export const TableUI = ({
           </TableHead>
 
           <TableBody>
-            {paginatedRows.map((data) => (
-              <TableRow
-                key={data.id}
-                hover
-                sx={{
-                  "&:last-child td": { borderBottom: 0 },
-                }}
-              >
-                {cells.map((cel) => (
-                  <TableCell
-                    key={cel.key}
-                    align={cel.key === "actions" ? "center" : "left"}
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={cells.length} align="center" sx={{ py: 6 }}>
+                  <Box
                     sx={{
-                      py: 0.5,
-                      fontSize: "0.92rem",
-                      verticalAlign: "middle",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 1.5,
                     }}
                   >
-                    {cel.key === "actions" && renderActions ? (
-                      renderActions(data)
-                    ) : cel.key === "statut" ? (
-                      <Chip
-                        label={getLabel?.(data[cel.key]) ?? "-"}
-                        variant="filled"
-                        color={getColor?.(data[cel.key]) ?? "default"}
-                        size="small"
-                        sx={{
-                          fontSize: "0.75rem",
-                          height: 28,
-                          fontWeight: 500,
-                        }}
-                      />
-                    ) : cel.key === "date" || cel.key.includes("date") ? (
-                      formatDate(data[cel.key])
-                    ) : (
-                      data[cel.key] ?? "-"
-                    )}
-                  </TableCell>
-                ))}
+                    <CircularProgress size={32} />
+                    <Typography color="text.secondary">
+                      Chargement...
+                    </Typography>
+                  </Box>
+                </TableCell>
               </TableRow>
-            ))}
-
-            {dataCells.length === 0 && (
+            ) : dataCells.length > 0 ? (
+              dataCells.map((data) => (
+                <TableRow
+                  key={data.id}
+                  hover
+                  sx={{
+                    "&:last-child td": { borderBottom: 0 },
+                  }}
+                >
+                  {cells.map((cel) => (
+                    <TableCell
+                      key={cel.key}
+                      align={cel.key === "actions" ? "center" : "left"}
+                      sx={{
+                        py: 0.5,
+                        fontSize: "0.92rem",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {renderCellContent(cel, data)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={cells.length} align="center" sx={{ py: 4 }}>
                   <Typography color="text.secondary">
@@ -170,16 +190,17 @@ export const TableUI = ({
 
       <TablePagination
         component="div"
-        count={dataCells.length}
+        count={total}
         page={page}
-        onPageChange={handleChangePage}
+        onPageChange={onPageChange}
         rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
         labelRowsPerPage="Lignes par page :"
         labelDisplayedRows={({ from, to, count }) =>
           `${from}-${to} sur ${count !== -1 ? count : `plus de ${to}`}`
         }
+        disabled={loading}
         sx={{
           mt: 2,
           ".MuiTablePagination-toolbar": {

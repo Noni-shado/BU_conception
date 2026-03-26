@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { http } from "../../../api/http";
-import {
-  Button,
-  Stack,
-  TextField,
-  IconButton,
-  Tooltip,
-  Box,
-} from "@mui/material";
+import { Button, IconButton, Tooltip, Box } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,12 +13,17 @@ import { DetailsLivreDialog } from "./DetailsLivreDialog";
 import { TableUI } from "../../../components/TableUI/TableUI";
 import { Header } from "../../../components/TableUI/Header";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
-import {AppSnackbar} from "../../../components/AppSnackBar";
+import { AppSnackbar } from "../../../components/AppSnackBar";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
 
 export default function Livres() {
   const [q, setQ] = useState("");
   const [livres, setLivres] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -55,9 +53,15 @@ export default function Livres() {
     setLoading(true);
     try {
       const res = await http.get("/bibliothecaire/livres", {
-        params: q ? { q } : {},
+        params: {
+          ...(q ? { q } : {}),
+          page: page + 1,
+          page_size: rowsPerPage,
+        },
       });
-      setLivres(res.data);
+
+      setLivres(res.data.items ?? []);
+      setTotal(res.data.total ?? 0);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -75,7 +79,7 @@ export default function Livres() {
     }, 500);
 
     return () => clearTimeout(delay);
-  }, [q]);
+  }, [q, page, rowsPerPage]);
 
   const ouvrirEdition = (livre) => {
     setLivreSelectionne(livre);
@@ -99,7 +103,12 @@ export default function Livres() {
       setDeleteLoading(true);
 
       await http.delete(`/bibliothecaire/livres/${selectedLivre.id}`);
-      await charger();
+
+      if (livres.length === 1 && page > 0) {
+        setPage((prev) => prev - 1);
+      } else {
+        await charger();
+      }
 
       setSnackbar({
         open: true,
@@ -131,6 +140,20 @@ export default function Livres() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(0);
+  };
+
   const dataCells = livres.map((l) => ({
     ...l,
     isbn: l.isbn || "-",
@@ -154,34 +177,28 @@ export default function Livres() {
 
   return (
     <>
-      <Stack
-        component="form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          charger();
+      <SearchBar
+        value={q}
+        onChange={(value) => {
+          setQ(value);
+          setPage(0);
         }}
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        mb={2}
-      >
-        <TextField
-          size="small"
-          label="Rechercher"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          fullWidth
-          autoFocus
-        />
-
-        <Button type="submit" variant="outlined" disabled={loading}>
-          Rechercher
-        </Button>
-      </Stack>
+        onSubmit={handleSearchSubmit}
+        loading={loading}
+        autoFocus
+        searchFields={["titre", "auteur", "ISBN"]}
+      />
 
       <TableUI
         Header={tableHeader}
         cells={cells}
         dataCells={dataCells}
+        loading={loading}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         renderActions={(livre) => (
           <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
             <Tooltip title="Détails">
@@ -205,52 +222,53 @@ export default function Livres() {
         )}
       />
 
-<AjouterLivreDialog
-  open={openAdd}
-  onClose={() => setOpenAdd(false)}
-  onSuccess={async () => {
-    setOpenAdd(false);
-    await charger();
-    setSnackbar({
-      open: true,
-      message: "Le livre a été ajouté avec succès.",
-      severity: "success",
-    });
-  }}
-  onError={(message) => {
-    setSnackbar({
-      open: true,
-      message: message || "Erreur lors de l'ajout du livre.",
-      severity: "error",
-    });
-  }}
-/>
+      <AjouterLivreDialog
+        open={openAdd}
+        onClose={() => setOpenAdd(false)}
+        onSuccess={async () => {
+          setOpenAdd(false);
+          setPage(0);
+          await charger();
+          setSnackbar({
+            open: true,
+            message: "Le livre a été ajouté avec succès.",
+            severity: "success",
+          });
+        }}
+        onError={(message) => {
+          setSnackbar({
+            open: true,
+            message: message || "Erreur lors de l'ajout du livre.",
+            severity: "error",
+          });
+        }}
+      />
 
-<ModifierLivreDialog
-  open={openEdit}
-  livre={livreSelectionne}
-  onClose={() => {
-    setOpenEdit(false);
-    setLivreSelectionne(null);
-  }}
-  onSuccess={async () => {
-    setOpenEdit(false);
-    setLivreSelectionne(null);
-    await charger();
-    setSnackbar({
-      open: true,
-      message: "Le livre a été modifié avec succès.",
-      severity: "success",
-    });
-  }}
-  onError={(message) => {
-    setSnackbar({
-      open: true,
-      message: message || "Erreur lors de la modification du livre.",
-      severity: "error",
-    });
-  }}
-/>
+      <ModifierLivreDialog
+        open={openEdit}
+        livre={livreSelectionne}
+        onClose={() => {
+          setOpenEdit(false);
+          setLivreSelectionne(null);
+        }}
+        onSuccess={async () => {
+          setOpenEdit(false);
+          setLivreSelectionne(null);
+          await charger();
+          setSnackbar({
+            open: true,
+            message: "Le livre a été modifié avec succès.",
+            severity: "success",
+          });
+        }}
+        onError={(message) => {
+          setSnackbar({
+            open: true,
+            message: message || "Erreur lors de la modification du livre.",
+            severity: "error",
+          });
+        }}
+      />
 
       <DetailsLivreDialog
         open={openDetails}

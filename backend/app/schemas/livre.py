@@ -24,6 +24,7 @@ class LivreOut(BaseModel):
     description: str
     nb_total: int
     nb_disponible: int
+    
 
     class Config:
         from_attributes = True

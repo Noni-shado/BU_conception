@@ -5,78 +5,95 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import { TableUI } from "../../../components/TableUI/TableUI";
 import { Header } from "../../../components/TableUI/Header";
-import { EMPRUNT_STATUS_CONFIG } from "../utils";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
+import { RETOUR_STATUS_CONFIG } from "../utils";
 
 export default function Retours() {
+  const [q, setQ] = useState("");
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const [filterValues, setFilterValues] = useState({
-    statut: "",
-    ordre_livre: "",
-  });
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const cells = [
-    { key: "livre", name: "Livre" },
-    { key: "utilisateur", name: "Utilisateur" },
-    { key: "retournee", name: "Retourné" },
-    { key: "statut", name: "Statut" },
-    { key: "date_retour", name: "Date de retour" },
-    { key: "actions", name: "Action" },
-  ];
-
-  const filters = [
+    {
+      key: "livre",
+      name: "Livre",
+      render: (row) => row.livre?.titre ?? "-",
+    },
+    {
+      key: "utilisateur",
+      name: "Utilisateur",
+      render: (row) => row.utilisateur?.nom_complet || row.utilisateur?.email || "-",
+    },
     {
       key: "statut",
-      label: "Filtrer par statut",
-      options: [
-        { value: "", label: "Tous" },
-        { value: "EN_ATTENTE", label: "En attente" },
-        { value: "RETOURNE", label: "Retourné" },
-      ],
-    }
+      name: "Statut",
+    },
+    {
+      key: "date_retour_prevue",
+      name: "Date retour prevue",
+      render: (row) =>
+        row.date_retour_prevue
+          ? new Date(row.date_retour_prevue).toLocaleDateString("fr-FR")
+          : "-",
+    },
+    {
+      key: "actions",
+      name: "Action",
+    },
   ];
 
-  const charger = async (customFilters = filterValues) => {
+  const charger = async () => {
     setLoading(true);
     try {
-      const params = {};
-
-      if (customFilters.statut) {
-        params.statut = customFilters.statut;
-      }
-
-      if (customFilters.ordre_livre) {
-        params.ordre_livre = customFilters.ordre_livre;
-      }
+      const params = {
+        page: page + 1,
+        page_size: rowsPerPage,
+        ...(q ? { q } : {}),
+      };
 
       const res = await http.get("/bibliothecaire/retours", { params });
-      setRows(res.data);
+
+      setRows(res.data.items ?? []);
+      setTotal(res.data.total ?? 0);
+    } catch (error) {
+      console.error("Erreur chargement retours :", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    charger();
-  }, []);
+    const delay = setTimeout(() => {
+      charger();
+    }, 500);
 
-  const handleFilterChange = (key, value) => {
-    const newFilters = {
-      ...filterValues,
-      [key]: value,
-    };
+    return () => clearTimeout(delay);
+  }, [q, page, rowsPerPage]);
 
-    setFilterValues(newFilters);
-    charger(newFilters);
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(0);
   };
 
   const getColor = (data) => {
-    return EMPRUNT_STATUS_CONFIG[data]?.color ?? "default";
+    return RETOUR_STATUS_CONFIG[data]?.color ?? "default";
   };
 
   const getLabel = (data) => {
-    return EMPRUNT_STATUS_CONFIG[data]?.label ?? "-";
+    return RETOUR_STATUS_CONFIG[data]?.label ?? "-";
   };
 
   const voirDetails = (row) => {
@@ -95,23 +112,40 @@ export default function Retours() {
   );
 
   return (
-    <TableUI
-      Header={tableHeader}
-      cells={cells}
-      dataCells={rows}
-      chipData={{ getColor, getLabel }}
-      filters={filters}
-      filterValues={filterValues}
-      onFilterChange={handleFilterChange}
-      renderActions={(row) => (
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-          <Tooltip title="Voir détails">
-            <IconButton color="primary" onClick={() => voirDetails(row)}>
-              <VisibilityIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
-    />
+    <>
+      <SearchBar
+        value={q}
+        onChange={(value) => {
+          setQ(value);
+          setPage(0);
+        }}
+        onSubmit={handleSearchSubmit}
+        loading={loading}
+        autoFocus
+        searchFields={["email utilisateur"]}
+      />
+
+      <TableUI
+        Header={tableHeader}
+        cells={cells}
+        dataCells={rows}
+        loading={loading}
+        chipData={{ getColor, getLabel }}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        renderActions={(row) => (
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+            <Tooltip title="Voir détails">
+              <IconButton color="primary" onClick={() => voirDetails(row)}>
+                <VisibilityIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+      />
+    </>
   );
 }

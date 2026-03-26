@@ -1,26 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { http } from "../../../api/http";
-import { Box, IconButton, Tooltip, Button } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { TableUI } from "../../../components/TableUI/TableUI";
 import { Header } from "../../../components/TableUI/Header";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
-import {AppSnackbar} from "../../../components/AppSnackbar";
+import { AppSnackbar } from "../../../components/AppSnackbar";
 import { EMPRUNT_STATUS, EMPRUNT_STATUS_CONFIG } from "../utils";
 import { DetailsEmpruntDialog } from "./DetailsEmpruntDialog";
+import { DeclinerEmpruntDialog } from "./DeclinerEmpruntDialog";
+import { SearchBar } from "../../../components/SearchBar/SearchBar";
 
-export default function Emprunts(){
+export default function Emprunts() {
+  const [q, setQ] = useState("");
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [declineOpen, setDeclineOpen] = useState(false);
+
   const [selectedEmprunt, setSelectedEmprunt] = useState(null);
-  const [actionType, setActionType] = useState(null); // "valider" | "decliner"
   const [actionLoading, setActionLoading] = useState(false);
+
   const [openDetails, setOpenDetails] = useState(false);
-const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
+  const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -29,53 +38,42 @@ const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
   });
 
   const cells = [
-    { key: "livre", name: "Livre" },
-    { key: "utilisateur", name: "Utilisateur" },
+    {
+      key: "livre",
+      name: "Livre",
+      render: (row) => row.livre?.titre ?? "-",
+    },
+    {
+      key: "utilisateur",
+      name: "Utilisateur",
+      render: (row) =>
+        row.utilisateur?.nom_complet || row.utilisateur?.email || "-",
+    },
     { key: "statut", name: "Statut" },
-    { key: "date", name: "Date" },
+    {
+      key: "date_emprunt",
+      name: "Date emprunt",
+      render: (row) =>
+        row.demande_le
+          ? new Date(row.demande_le).toLocaleDateString("fr-FR")
+          : "-",
+    },
     { key: "actions", name: "Actions" },
   ];
-
-  const dataCells = [
-  {
-    id: 1,
-    livre: "Le Petit Prince",
-    utilisateur: "Alice Dupont",
-    statut: "EN_ATTENTE",
-    date: "2026-03-20",
-  },
-  {
-    id: 2,
-    livre: "1984",
-    utilisateur: "Mohamed Ali",
-    statut: "VALIDE",
-    date: "2026-03-18",
-  },
-  {
-    id: 4,
-    livre: "Clean Code",
-    utilisateur: "Youness Benali",
-    statut: "EN_ATTENTE",
-    date: "2026-03-22",
-  },
-  {
-    id: 5,
-    livre: "Atomic Habits",
-    utilisateur: "Tom Durand",
-    statut: "VALIDE",
-    date: "2026-03-10",
-  },
-];
-
-  useEffect(() => {
-    charger();
-  }, []);
 
   const charger = async () => {
     setLoading(true);
     try {
-      const res = await http.get("/bibliothecaire/emprunts");
-      setRows(res.data);
+      const res = await http.get("/bibliothecaire/emprunts", {
+        params: {
+          ...(q ? { q } : {}),
+          page: page + 1,
+          page_size: rowsPerPage,
+        },
+      });
+
+      setRows(res.data.items ?? []);
+      setTotal(res.data.total ?? 0);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -87,16 +85,22 @@ const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
     }
   };
 
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      charger();
+    }, 500);
+
+    return () => clearTimeout(delay);
+  }, [q, page, rowsPerPage]);
+
   const ouvrirConfirmationValidation = (row) => {
     setSelectedEmprunt(row);
-    setActionType("valider");
     setConfirmOpen(true);
   };
 
   const ouvrirConfirmationDeclin = (row) => {
     setSelectedEmprunt(row);
-    setActionType("decliner");
-    setConfirmOpen(true);
+    setDeclineOpen(true);
   };
 
   const fermerConfirmation = () => {
@@ -105,34 +109,25 @@ const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
     setSelectedEmprunt(null);
   };
 
-  const handleConfirmAction = async () => {
-    if (!selectedEmprunt?.id || !actionType) return;
+  const fermerDeclin = () => {
+    if (actionLoading) return;
+    setDeclineOpen(false);
+    setSelectedEmprunt(null);
+  };
+
+  const handleValider = async () => {
+    if (!selectedEmprunt?.id) return;
 
     try {
       setActionLoading(true);
 
-      if (actionType === "valider") {
-        await http.post(
-          `/bibliothecaire/emprunts/${selectedEmprunt.id}/valider`,
-          { date_retour_prevue: null }
-        );
+      await http.post(`/bibliothecaire/emprunts/${selectedEmprunt.id}/valider`);
 
-        setSnackbar({
-          open: true,
-          message: "L'emprunt a été validé avec succès.",
-          severity: "success",
-        });
-      }
-
-      if (actionType === "decliner") {
-        await http.post(`/bibliothecaire/emprunts/${selectedEmprunt.id}/decliner`);
-
-        setSnackbar({
-          open: true,
-          message: "L'emprunt a été décliné avec succès.",
-          severity: "success",
-        });
-      }
+      setSnackbar({
+        open: true,
+        message: "L'emprunt a été validé avec succès.",
+        severity: "success",
+      });
 
       await charger();
       fermerConfirmation();
@@ -141,7 +136,7 @@ const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
         open: true,
         message:
           error?.response?.data?.detail ||
-          "Une erreur est survenue lors du traitement de l'emprunt.",
+          "Une erreur est survenue lors de la validation de l'emprunt.",
         severity: "error",
       });
     } finally {
@@ -149,10 +144,42 @@ const [selectedEmpruntDetails, setSelectedEmpruntDetails] = useState(null);
     }
   };
 
-const voirDetails = (row) => {
-  setSelectedEmpruntDetails(row);
-  setOpenDetails(true);
-};
+  const handleDecliner = async (motifRefus) => {
+    if (!selectedEmprunt?.id) return;
+
+    try {
+      setActionLoading(true);
+
+      await http.post(
+        `/bibliothecaire/emprunts/${selectedEmprunt.id}/decliner`,
+        { motif_refus: motifRefus }
+      );
+
+      setSnackbar({
+        open: true,
+        message: "L'emprunt a été décliné avec succès.",
+        severity: "success",
+      });
+
+      await charger();
+      fermerDeclin();
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message:
+          error?.response?.data?.detail ||
+          "Une erreur est survenue lors du refus de l'emprunt.",
+        severity: "error",
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const voirDetails = (row) => {
+    setSelectedEmpruntDetails(row);
+    setOpenDetails(true);
+  };
 
   const getColor = (data) => {
     return EMPRUNT_STATUS_CONFIG[data]?.color ?? "default";
@@ -167,19 +194,47 @@ const voirDetails = (row) => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  const tableHeader = (
-    <Header
-      title="Emprunts"
-    />
-  );
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setPage(0);
+  };
+
+  const tableHeader = <Header title="Emprunts" />;
 
   return (
     <>
+      <SearchBar
+        value={q}
+        onChange={(value) => {
+          setQ(value);
+          setPage(0);
+        }}
+        onSubmit={handleSearchSubmit}
+        loading={loading}
+        autoFocus
+        searchFields={["email utilisateur"]}
+      />
+
       <TableUI
         Header={tableHeader}
         cells={cells}
-        dataCells={dataCells}
+        dataCells={rows}
+        loading={loading}
         chipData={{ getColor, getLabel }}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         renderActions={(row) => (
           <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
             <Tooltip title="Voir détails">
@@ -217,35 +272,38 @@ const voirDetails = (row) => {
 
       <ConfirmDialog
         open={confirmOpen}
-        type={actionType === "valider" ? "success" : "error"}
-        title={
-          actionType === "valider"
-            ? "Valider l'emprunt"
-            : "Décliner l'emprunt"
-        }
-        message={
-          actionType === "valider"
-            ? `Voulez-vous valider l'emprunt de "${
-                selectedEmprunt?.livre ?? ""
-              }" pour "${selectedEmprunt?.utilisateur ?? ""}" ?`
-            : `Voulez-vous décliner l'emprunt de "${
-                selectedEmprunt?.livre ?? ""
-              }" pour "${selectedEmprunt?.utilisateur ?? ""}" ?`
-        }
-        onConfirm={handleConfirmAction}
+        type="success"
+        title="Valider l'emprunt"
+        message={`Voulez-vous valider l'emprunt de "${
+          selectedEmprunt?.livre?.titre ?? ""
+        }" pour "${
+          selectedEmprunt?.utilisateur?.nom_complet ||
+          selectedEmprunt?.utilisateur?.email ||
+          ""
+        }" ?`}
+        onConfirm={handleValider}
         onCancel={fermerConfirmation}
-        confirmLabel={actionType === "valider" ? "Valider" : "Décliner"}
+        confirmLabel="Valider"
         cancelLabel="Annuler"
         loading={actionLoading}
       />
+
+      <DeclinerEmpruntDialog
+        open={declineOpen}
+        onClose={fermerDeclin}
+        onConfirm={handleDecliner}
+        emprunt={selectedEmprunt}
+        loading={actionLoading}
+      />
+
       <DetailsEmpruntDialog
-  open={openDetails}
-  emprunt={selectedEmpruntDetails}
-  onClose={() => {
-    setOpenDetails(false);
-    setSelectedEmpruntDetails(null);
-  }}
-/>
+        open={openDetails}
+        emprunt={selectedEmpruntDetails}
+        onClose={() => {
+          setOpenDetails(false);
+          setSelectedEmpruntDetails(null);
+        }}
+      />
 
       <AppSnackbar
         open={snackbar.open}

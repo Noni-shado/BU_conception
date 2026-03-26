@@ -8,7 +8,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { EMPRUNT_STATUS_CONFIG } from "../utils";
+import { EMPRUNT_STATUS, EMPRUNT_STATUS_CONFIG } from "../utils";
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -20,6 +20,9 @@ export const DetailsEmpruntDialog = ({ open, onClose, emprunt }) => {
     label: "-",
     color: "default",
   };
+
+  const isRetourne = emprunt?.statut === EMPRUNT_STATUS.RETOURNE;
+  const isRefuse = emprunt?.statut === EMPRUNT_STATUS.REFUSE;
 
   const commonTextFieldSx = {
     "& .MuiInputBase-input.Mui-disabled": {
@@ -55,10 +58,11 @@ export const DetailsEmpruntDialog = ({ open, onClose, emprunt }) => {
 
       <DialogContent sx={{ pt: 1 }}>
         <Stack spacing={2.5} sx={{ mt: 1 }}>
+          {/* Livre + utilisateur */}
           <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
             <TextField
               label="Livre"
-              value={emprunt?.livre ?? "-"}
+              value={emprunt?.livre?.titre ?? "-"}
               fullWidth
               disabled
               sx={commonTextFieldSx}
@@ -66,13 +70,18 @@ export const DetailsEmpruntDialog = ({ open, onClose, emprunt }) => {
 
             <TextField
               label="Utilisateur"
-              value={emprunt?.utilisateur ?? "-"}
+              value={
+                emprunt?.utilisateur?.nom_complet ||
+                emprunt?.utilisateur?.email ||
+                "-"
+              }
               fullWidth
               disabled
               sx={commonTextFieldSx}
             />
           </Stack>
 
+          {/* Statut + date */}
           <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
             <TextField
               label="Statut"
@@ -84,20 +93,40 @@ export const DetailsEmpruntDialog = ({ open, onClose, emprunt }) => {
 
             <TextField
               label="Date d'emprunt"
-              value={formatDate(emprunt?.date_emprunt ?? emprunt?.date)}
+              value={formatDate(emprunt?.demande_le)}
               fullWidth
               disabled
               sx={commonTextFieldSx}
             />
           </Stack>
 
-          <TextField
-            label="Date de retour prévue"
-            value={formatDate(emprunt?.date_retour_prevue)}
-            fullWidth
-            disabled
-            sx={commonTextFieldSx}
-          />
+          {/* Date retour OU retour prévue */}
+          {!isRefuse && (
+            <TextField
+              label={isRetourne ? "Date de retour" : "Date de retour prévue"}
+              value={formatDate(
+                isRetourne
+                  ? emprunt?.retourne_le
+                  : emprunt?.date_retour_prevue
+              )}
+              fullWidth
+              disabled
+              sx={commonTextFieldSx}
+            />
+          )}
+
+          {/* 🔥 Motif de refus */}
+          {isRefuse && (
+            <TextField
+              label="Motif de refus"
+              value={emprunt?.motif_refus ?? "-"}
+              fullWidth
+              disabled
+              multiline
+              minRows={3}
+              sx={commonTextFieldSx}
+            />
+          )}
         </Stack>
       </DialogContent>
 

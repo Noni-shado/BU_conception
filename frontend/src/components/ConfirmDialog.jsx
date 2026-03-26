@@ -24,6 +24,8 @@ export function ConfirmDialog({
   cancelLabel = "Annuler",
   loading = false,
   type = "warning",
+  children,
+  confirmDisabled = false,
 }) {
   const config = {
     warning: {
@@ -58,19 +60,18 @@ export function ConfirmDialog({
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 4,
-          px: 3,
-          py: 3,
+          borderRadius: 3,
+          px: 2.5,
+          py: 2.5,
         },
       }}
     >
-      <DialogContent>
-        <Stack spacing={2.5} alignItems="center" textAlign="center">
-          {/* 🔥 ICON CIRCLE */}
+      <DialogContent sx={{ p: 0 }}>
+        <Stack spacing={2} alignItems="center" textAlign="center">
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               borderRadius: "50%",
               backgroundColor: `${current.color}20`,
               display: "flex",
@@ -82,26 +83,43 @@ export function ConfirmDialog({
             {current.icon}
           </Box>
 
-          {/* TITLE */}
           <Typography variant="h6" fontWeight={600}>
             {title}
           </Typography>
 
-          {/* MESSAGE */}
-          <Typography color="text.secondary">
-            {message}
-          </Typography>
+          {message && (
+            <Typography
+              sx={{
+                fontSize: "0.95rem",
+                color: "#374151",
+                lineHeight: 1.5,
+                maxWidth: 340,
+              }}
+            >
+              {message}
+            </Typography>
+          )}
+
+          {children && (
+            <Box sx={{ width: "100%", mt: 1 }}>
+              {children}
+            </Box>
+          )}
         </Stack>
       </DialogContent>
 
       <DialogActions
         sx={{
           justifyContent: "center",
-          gap: 2,
-          mt: 1,
+          gap: 1.5,
+          mt: 2,
         }}
       >
-        <Button onClick={onCancel} disabled={loading}>
+        <Button
+          onClick={onCancel}
+          disabled={loading}
+          sx={{ textTransform: "none" }}
+        >
           {cancelLabel}
         </Button>
 
@@ -109,10 +127,12 @@ export function ConfirmDialog({
           onClick={onConfirm}
           variant="contained"
           color={current.confirmColor}
-          disabled={loading}
+          disabled={loading || confirmDisabled}
           sx={{
             borderRadius: 999,
-            px: 3,
+            px: 2.5,
+            textTransform: "none",
+            boxShadow: "none",
           }}
         >
           {confirmLabel}
