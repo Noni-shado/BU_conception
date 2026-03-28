@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { http } from "../../../api/http";
-import { Box, IconButton, Tooltip, Button } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import AddIcon from "@mui/icons-material/Add";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { TableUI } from "../../../components/TableUI/TableUI";
 import { Header } from "../../../components/TableUI/Header";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
+import { AppSnackbar } from "../../../components/AppSnackBar";
+
 import { RETOUR_STATUS_CONFIG } from "../utils";
+import { DetailsRetourDialog } from "./DetailsRetourDialog";
+import { NotifierRetourDialog } from "./NotifierRetourDialog";
 
 export default function Retours() {
   const [q, setQ] = useState("");
@@ -17,6 +21,19 @@ export default function Retours() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [openDetails, setOpenDetails] = useState(false);
+  const [selectedRetour, setSelectedRetour] = useState(null);
+
+  const [openNotifier, setOpenNotifier] = useState(false);
+  const [selectedRetourNotifier, setSelectedRetourNotifier] = useState(null);
+  const [openAdd, setOpenAdd] = useState(false);
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   const cells = [
     {
       key: "livre",
@@ -26,7 +43,8 @@ export default function Retours() {
     {
       key: "utilisateur",
       name: "Utilisateur",
-      render: (row) => row.utilisateur?.nom_complet || row.utilisateur?.email || "-",
+      render: (row) =>
+        row.utilisateur?.nom_complet || row.utilisateur?.email || "-",
     },
     {
       key: "statut",
@@ -34,7 +52,7 @@ export default function Retours() {
     },
     {
       key: "date_retour_prevue",
-      name: "Date retour prevue",
+      name: "Date retour prévue",
       render: (row) =>
         row.date_retour_prevue
           ? new Date(row.date_retour_prevue).toLocaleDateString("fr-FR")
@@ -60,7 +78,11 @@ export default function Retours() {
       setRows(res.data.items ?? []);
       setTotal(res.data.total ?? 0);
     } catch (error) {
-      console.error("Erreur chargement retours :", error);
+      setSnackbar({
+        open: true,
+        message: "Erreur lors du chargement des retours.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -88,6 +110,11 @@ export default function Retours() {
     setPage(0);
   };
 
+  const handleCloseSnackbar = (_, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const getColor = (data) => {
     return RETOUR_STATUS_CONFIG[data]?.color ?? "default";
   };
@@ -97,17 +124,28 @@ export default function Retours() {
   };
 
   const voirDetails = (row) => {
-    console.log("details", row);
+    setSelectedRetour(row);
+    setOpenDetails(true);
+  };
+
+  const handleCloseDetails = () => {
+    setOpenDetails(false);
+    setSelectedRetour(null);
+  };
+
+  const notifier = (row) => {
+    setSelectedRetourNotifier(row);
+    setOpenNotifier(true);
+  };
+
+  const handleCloseNotifier = () => {
+    setOpenNotifier(false);
+    setSelectedRetourNotifier(null);
   };
 
   const tableHeader = (
     <Header
       title="Retours"
-      Action={
-        <Button variant="contained" startIcon={<AddIcon />}>
-          Ajouter
-        </Button>
-      }
     />
   );
 
@@ -143,9 +181,63 @@ export default function Retours() {
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
+
+            <Tooltip
+              title={
+                row.statut === "EN_RETARD"
+                  ? "Notifier l'utilisateur"
+                  : "Disponible uniquement pour les retards"
+              }
+            >
+              <span>
+                <IconButton
+                  color="warning"
+                  disabled={row.statut !== "EN_RETARD"}
+                  onClick={() => notifier(row)}
+                >
+                  <NotificationsIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
           </Box>
         )}
       />
+
+      <DetailsRetourDialog
+        open={openDetails}
+        onClose={handleCloseDetails}
+        retour={selectedRetour}
+      />
+
+      <NotifierRetourDialog
+        open={openNotifier}
+        onClose={handleCloseNotifier}
+        retour={selectedRetourNotifier}
+        onSuccess={async () => {
+          handleCloseNotifier();
+          await charger();
+          setSnackbar({
+            open: true,
+            message: "La notification a été envoyée avec succès.",
+            severity: "success",
+          });
+        }}
+        onError={(message) => {
+          setSnackbar({
+            open: true,
+            message: message || "Erreur lors de l'envoi de la notification.",
+            severity: "error",
+          });
+        }}
+      />
+
+      <AppSnackbar
+        open={snackbar.open}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
+    
     </>
   );
 }
