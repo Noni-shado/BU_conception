@@ -3,12 +3,14 @@ import { http } from "../../../api/http";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+
 import { TableUI } from "../../../components/TableUI/TableUI";
 import { Header } from "../../../components/TableUI/Header";
+import { TableFilter } from "../../../components/TableUI/TableFilter";
 import { SearchBar } from "../../../components/SearchBar/SearchBar";
 import { AppSnackbar } from "../../../components/AppSnackBar";
 
-import { RETOUR_STATUS_CONFIG } from "../utils";
+import { RETOUR_STATUS, RETOUR_STATUS_CONFIG } from "../utils";
 import { DetailsRetourDialog } from "./DetailsRetourDialog";
 import { NotifierRetourDialog } from "./NotifierRetourDialog";
 
@@ -21,12 +23,15 @@ export default function Retours() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [filtersState, setFiltersState] = useState({
+    statut: "",
+  });
+
   const [openDetails, setOpenDetails] = useState(false);
   const [selectedRetour, setSelectedRetour] = useState(null);
 
   const [openNotifier, setOpenNotifier] = useState(false);
   const [selectedRetourNotifier, setSelectedRetourNotifier] = useState(null);
-  const [openAdd, setOpenAdd] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -64,6 +69,13 @@ export default function Retours() {
     },
   ];
 
+  const statutOptions = [
+    { value: "", label: "Tous" },
+    { value: RETOUR_STATUS.EN_ATTENTE, label: "En attente" },
+    { value: RETOUR_STATUS.EN_RETARD, label: "En retard" },
+    { value: RETOUR_STATUS.RETOURNE, label: "Retourné" },
+  ];
+
   const charger = async () => {
     setLoading(true);
     try {
@@ -71,6 +83,7 @@ export default function Retours() {
         page: page + 1,
         page_size: rowsPerPage,
         ...(q ? { q } : {}),
+        ...(filtersState.statut ? { statut: filtersState.statut } : {}),
       };
 
       const res = await http.get("/bibliothecaire/retours", { params });
@@ -94,7 +107,7 @@ export default function Retours() {
     }, 500);
 
     return () => clearTimeout(delay);
-  }, [q, page, rowsPerPage]);
+  }, [q, page, rowsPerPage, filtersState.statut]);
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -107,6 +120,14 @@ export default function Retours() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setPage(0);
+  };
+
+  const handleFilterChange = (value) => {
+    setFiltersState((prev) => ({
+      ...prev,
+      statut: value,
+    }));
     setPage(0);
   };
 
@@ -144,9 +165,26 @@ export default function Retours() {
   };
 
   const tableHeader = (
-    <Header
-      title="Retours"
-    />
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: { xs: "stretch", md: "center" },
+        justifyContent: "space-between",
+        flexDirection: { xs: "column", md: "row" },
+        gap: 2,
+        mb: 2,
+      }}
+    >
+      <Header title="Retours" />
+
+      <TableFilter
+        label="Statut"
+        value={filtersState.statut}
+        options={statutOptions}
+        onChange={handleFilterChange}
+        disabled={loading}
+      />
+    </Box>
   );
 
   return (
@@ -184,7 +222,7 @@ export default function Retours() {
 
             <Tooltip
               title={
-                row.statut === "EN_RETARD"
+                row.statut === RETOUR_STATUS.EN_RETARD
                   ? "Notifier l'utilisateur"
                   : "Disponible uniquement pour les retards"
               }
@@ -192,7 +230,7 @@ export default function Retours() {
               <span>
                 <IconButton
                   color="warning"
-                  disabled={row.statut !== "EN_RETARD"}
+                  disabled={row.statut !== RETOUR_STATUS.EN_RETARD}
                   onClick={() => notifier(row)}
                 >
                   <NotificationsIcon />
@@ -237,7 +275,6 @@ export default function Retours() {
         message={snackbar.message}
         severity={snackbar.severity}
       />
-    
     </>
   );
 }

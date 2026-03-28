@@ -10,11 +10,6 @@ import {
   Paper,
   Chip,
   TablePagination,
-  Stack,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Box,
   Skeleton,
 } from "@mui/material";
@@ -25,11 +20,7 @@ export const TableUI = ({
   renderActions,
   Header,
   chipData = {},
-  filters = [],
-  filterValues = {},
-  onFilterChange,
   loading = false,
-
   page = 0,
   rowsPerPage = 5,
   total = 0,
@@ -96,37 +87,6 @@ export const TableUI = ({
       }}
     >
       {Header}
-
-      {filters.length > 0 && (
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={2}
-          mb={2}
-          justifyContent="flex-end"
-        >
-          {filters.map((filter) => (
-            <FormControl
-              key={filter.key}
-              size="small"
-              sx={{ minWidth: filter.minWidth || 180 }}
-              disabled={loading}
-            >
-              <InputLabel>{filter.label}</InputLabel>
-              <Select
-                value={filterValues[filter.key] ?? ""}
-                label={filter.label}
-                onChange={(e) => onFilterChange?.(filter.key, e.target.value)}
-              >
-                {(filter.options || []).map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          ))}
-        </Stack>
-      )}
 
       <TableContainer sx={{ overflowX: "auto" }}>
         <Table sx={{ minWidth: 900 }}>

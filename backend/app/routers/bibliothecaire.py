@@ -137,6 +137,7 @@ def supprimer_livre(livre_id: int, db: Session = Depends(get_db)):
 )
 def lister_emprunts(
     q: str | None = Query(default=None),
+    statut: str | None = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(5, ge=1, le=100),
     db: Session = Depends(get_db),
@@ -151,12 +152,23 @@ def lister_emprunts(
         .order_by(Emprunt.id.desc())
     )
 
+    # 🔍 recherche par email utilisateur
     if q:
         like = f"%{q}%"
         query = query.filter(Utilisateur.email.ilike(like))
 
+    # 🎯 filtre par statut
+    if statut:
+        query = query.filter(Emprunt.statut == statut)
+
     total = query.count()
-    items = query.offset((page - 1) * page_size).limit(page_size).all()
+
+    items = (
+        query
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
 
     return {
         "items": items,
@@ -264,6 +276,7 @@ def decliner_emprunt(
 )
 def lister_retours(
     q: str | None = Query(default=None),
+    statut: str | None = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(5, ge=1, le=100),
     db: Session = Depends(get_db),
@@ -282,12 +295,12 @@ def lister_retours(
         like = f"%{q}%"
         query = query.filter(Utilisateur.email.ilike(like))
 
-    total = query.count()
-    items = query.offset((page - 1) * page_size).limit(page_size).all()
-
+    retours = query.all()
     today = datetime.now(timezone.utc).date()
 
-    for retour in items:
+    items_filtres = []
+
+    for retour in retours:
         if retour.retourne_le:
             if retour.retourne_le.date() > retour.date_retour_prevue:
                 retour.statut = StatutRetour.EN_RETARD.value
@@ -298,6 +311,16 @@ def lister_retours(
                 retour.statut = StatutRetour.EN_RETARD.value
             else:
                 retour.statut = StatutRetour.EN_ATTENTE.value
+
+        if statut and retour.statut != statut:
+            continue
+
+        items_filtres.append(retour)
+
+    total = len(items_filtres)
+    start = (page - 1) * page_size
+    end = start + page_size
+    items = items_filtres[start:end]
 
     return {
         "items": items,

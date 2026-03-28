@@ -13,6 +13,7 @@ export const EmpruntsListBase = ({
   renderHeader,
   renderActions,
   extraDialogs,
+  extraParams = {},
 }) => {
   const [q, setQ] = useState("");
   const [rows, setRows] = useState([]);
@@ -78,6 +79,7 @@ export const EmpruntsListBase = ({
       const res = await http.get(endpoint, {
         params: {
           ...(q ? { q } : {}),
+          ...(extraParams || {}),
           page: page + 1,
           page_size: rowsPerPage,
         },
@@ -102,7 +104,7 @@ export const EmpruntsListBase = ({
     }, 500);
 
     return () => clearTimeout(delay);
-  }, [q, page, rowsPerPage, refreshKey]);
+  }, [q, page, rowsPerPage, refreshKey, JSON.stringify(extraParams)]);
 
   const voirDetails = (row) => {
     setSelectedEmpruntDetails(row);
@@ -153,7 +155,7 @@ export const EmpruntsListBase = ({
     setPage(0);
   };
 
-  const headerNode = renderHeader?.({ title }) ?? null;
+  const headerNode = renderHeader?.({ title, loading }) ?? null;
 
   return (
     <>
