@@ -186,6 +186,7 @@ def demander_emprunt(
 )
 def lister_mes_emprunts(
     q: str | None = Query(default=None),
+    statut: str | None = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(5, ge=1, le=100),
     utilisateur_id: int = Depends(get_utilisateur_id),
@@ -208,6 +209,9 @@ def lister_mes_emprunts(
             | (Livre.auteur.ilike(like))
             | (Livre.isbn.ilike(like))
         )
+
+    if statut:
+        query = query.filter(Emprunt.statut == statut)
 
     total = query.count()
     items = query.offset((page - 1) * page_size).limit(page_size).all()
