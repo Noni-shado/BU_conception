@@ -9,6 +9,7 @@ import {
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
+import { UserMenu } from "./UserMenu";
 
 export const Header = ({ title, toggleDrawer, open, isMobile, drawerWidth }) => {
   const nav = useNavigate();
@@ -71,22 +72,7 @@ export const Header = ({ title, toggleDrawer, open, isMobile, drawerWidth }) => 
           {title}
         </Typography>
 
-        <Button
-          color="inherit"
-          startIcon={<LogoutIcon />}
-          onClick={logout}
-          sx={{
-            minWidth: "auto",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Typography
-            component="span"
-            sx={{ display: { xs: "none", sm: "inline" } }}
-          >
-            Déconnexion
-          </Typography>
-        </Button>
+       <UserMenu />
       </Toolbar>
     </AppBar>
   );

@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/authentification/Login";
 import Register from "./pages/authentification/Register";
+import UserProfile from "./pages/user/profil/Profil";
+import BiblioProfile from "./pages/biblio/profil/Profil";
 
 // Bibliothécaire
 import BiblioLayout from "./layout/BiblioLayout";
@@ -41,6 +43,8 @@ export default function App() {
         <Route index element={<Livres />} />
         <Route path="emprunts" element={<Emprunts />} />
         <Route path="retours" element={<Retours />} />
+        <Route path="profile" element={<BiblioProfile />} />
+
       </Route>
 
       {/* Dashboard Utilisateur */}
@@ -55,6 +59,8 @@ export default function App() {
         <Route index element={<LivresUser />} />
         <Route path="emprunts" element={<EmpruntsUser />} />
         <Route path="notifs" element={<Notifications />} />
+        <Route path="profile" element={<UserProfile />} />
+
       </Route>
 
       {/* Fallback */}
