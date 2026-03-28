@@ -10,6 +10,12 @@ import Livres from "./pages/biblio/livres/Livres";
 import Emprunts from "./pages/biblio/emprunts/Emprunts";
 import Retours from "./pages/biblio/retours/Retours";
 
+// User
+import UserLayout from "./layout/UserLayout";
+import LivresUser from "./pages/user/livres/LivresUser";
+import EmpruntsUser  from "./pages/user/emprunts/Emprunts";
+import Notifications from "./pages/user/notifs/Notifs";
+
 // Guard rôle (optionnel mais conseillé)
 import RequireRole from "./components/RequireRole";
 
@@ -35,6 +41,20 @@ export default function App() {
         <Route index element={<Livres />} />
         <Route path="emprunts" element={<Emprunts />} />
         <Route path="retours" element={<Retours />} />
+      </Route>
+
+      {/* Dashboard Utilisateur */}
+      <Route
+        path="/user"
+        element={
+          <RequireRole role="UTILISATEUR">
+            <UserLayout />
+          </RequireRole>
+        }
+      >
+        <Route index element={<LivresUser />} />
+        <Route path="emprunts" element={<EmpruntsUser />} />
+        <Route path="notifs" element={<Notifications />} />
       </Route>
 
       {/* Fallback */}

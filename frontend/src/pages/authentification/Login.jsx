@@ -40,8 +40,10 @@ const submit = async (e) => {
 
     
 
-    if (role === "BIBLIOTHECAIRE") nav("/biblio");
-    else nav("/"); // ou /user
+    // if (role === "BIBLIOTHECAIRE") nav("/biblio");
+    if (role === "UTILISATEUR") nav("/user");
+
+    else nav("/"); 
   } catch (e2) {
     setErr(e2?.response?.data?.detail || "Connexion impossible");
   } finally {

@@ -6,6 +6,10 @@ export const http = axios.create({
 
 http.interceptors.request.use((config) => {
     const role = localStorage.getItem("role");
-    if (role) config.headers["X-ROLE"] = role; // pour les routes /bibliothecaire/*
+    const utilisateurId = localStorage.getItem("utilisateur_id");
+
+    if (role) config.headers["X-ROLE"] = role;
+    if (utilisateurId) config.headers["X-USER-ID"] = utilisateurId;
+
     return config;
 });
