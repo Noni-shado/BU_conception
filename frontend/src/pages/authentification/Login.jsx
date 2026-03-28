@@ -38,12 +38,13 @@ const submit = async (e) => {
     localStorage.setItem("utilisateur_id", String(res.data?.id ?? ""));
     localStorage.setItem("email", res.data?.email ?? "");
 
-    
-
-    // if (role === "BIBLIOTHECAIRE") nav("/biblio");
-    if (role === "UTILISATEUR") nav("/user");
-
-    else nav("/"); 
+    if (role === "BIBLIOTHECAIRE") {
+  nav("/biblio");
+} else if (role === "UTILISATEUR") {
+  nav("/user");
+} else {
+  nav("/");
+}
   } catch (e2) {
     setErr(e2?.response?.data?.detail || "Connexion impossible");
   } finally {

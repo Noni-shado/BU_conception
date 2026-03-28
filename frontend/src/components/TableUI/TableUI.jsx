@@ -15,8 +15,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  CircularProgress,
   Box,
+  Skeleton,
 } from "@mui/material";
 
 export const TableUI = ({
@@ -38,8 +38,7 @@ export const TableUI = ({
 }) => {
   const { getColor, getLabel } = chipData;
 
-  const formatDate = (date) =>
-    date ? new Date(date).toLocaleDateString("fr-FR") : "-";
+  const skeletonRows = Array.from({ length: rowsPerPage || 5 });
 
   const renderCellContent = (cel, data) => {
     if (cel.key === "actions" && renderActions) {
@@ -65,8 +64,25 @@ export const TableUI = ({
         />
       );
     }
-    
+
     return data[cel.key] ?? "-";
+  };
+
+  const renderSkeletonCell = (cel) => {
+    if (cel.key === "actions") {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+          <Skeleton variant="circular" width={32} height={32} />
+          <Skeleton variant="circular" width={32} height={32} />
+        </Box>
+      );
+    }
+
+    if (cel.key === "statut") {
+      return <Skeleton variant="rounded" width={90} height={28} />;
+    }
+
+    return <Skeleton variant="text" width="85%" height={28} />;
   };
 
   return (
@@ -133,33 +149,27 @@ export const TableUI = ({
           </TableHead>
 
           <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={cells.length} align="center" sx={{ py: 6 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 1.5,
-                    }}
-                  >
-                    <CircularProgress size={32} />
-                    <Typography color="text.secondary">
-                      Chargement...
-                    </Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
+            {loading && dataCells.length === 0 ? (
+              skeletonRows.map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  {cells.map((cel) => (
+                    <TableCell
+                      key={cel.key}
+                      align={cel.key === "actions" ? "center" : "left"}
+                      sx={{
+                        py: 1,
+                        fontSize: "0.92rem",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {renderSkeletonCell(cel)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : dataCells.length > 0 ? (
               dataCells.map((data) => (
-                <TableRow
-                  key={data.id}
-                  hover
-                  sx={{
-                    "&:last-child td": { borderBottom: 0 },
-                  }}
-                >
+                <TableRow key={data.id} hover>
                   {cells.map((cel) => (
                     <TableCell
                       key={cel.key}
@@ -200,7 +210,7 @@ export const TableUI = ({
         labelDisplayedRows={({ from, to, count }) =>
           `${from}-${to} sur ${count !== -1 ? count : `plus de ${to}`}`
         }
-        disabled={loading}
+        disabled={loading && dataCells.length === 0}
         sx={{
           mt: 2,
           ".MuiTablePagination-toolbar": {
