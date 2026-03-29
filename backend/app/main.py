@@ -5,6 +5,7 @@ from app.db.session import engine
 from app.routers.auth import router as auth_router
 from app.routers.bibliothecaire import router as router_bibliothecaire
 from app.routers.utilisateur import router as utilisateur_router
+from app.routers.admin import router as admin_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -21,3 +22,4 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(router_bibliothecaire)
 app.include_router(utilisateur_router)
+app.include_router(admin_router)

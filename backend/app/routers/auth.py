@@ -28,7 +28,19 @@ def inscription(data: UtilisateurCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def connexion(data: UtilisateurLogin, db: Session = Depends(get_db)):
     u = db.query(Utilisateur).filter(Utilisateur.email == data.email).first()
+
+    # ❌ mauvais email ou mot de passe
     if not u or not u.verifier_mdp(data.mot_de_passe):
         raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
 
-    return {"ok": True, "id": u.id, "role": u.role, "email": u.email}
+    # 🚫 compte bloqué
+    if not u.actif:
+        raise HTTPException(status_code=403, detail="Compte bloqué")
+
+    return {
+        "ok": True,
+        "id": u.id,
+        "role": u.role,
+        "email": u.email,
+        "actif": u.actif,
+    }

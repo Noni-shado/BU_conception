@@ -42,7 +42,9 @@ const submit = async (e) => {
   nav("/biblio");
 } else if (role === "UTILISATEUR") {
   nav("/user");
-} else {
+} else if (role === "ADMIN") {
+  nav("/admin");
+}else {
   nav("/");
 }
   } catch (e2) {
@@ -109,12 +111,12 @@ const submit = async (e) => {
 
             <Divider />
 
-            <Typography variant="body2" color="text.secondary" textAlign="center">
+            {/* <Typography variant="body2" color="text.secondary" textAlign="center">
               Pas de compte ?{" "}
               <Link to="/register" style={{ fontWeight: 700, textDecoration: "none" }}>
                 Créer un compte
               </Link>
-            </Typography>
+            </Typography> */}
           </Stack>
         </form>
       </Stack>

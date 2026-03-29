@@ -44,3 +44,35 @@ class LivreOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+
+class CompteBase(BaseModel):
+    nom_complet: str
+    email: EmailStr
+    role: str
+
+
+class CompteCreate(CompteBase):
+    mot_de_passe: str
+
+
+class CompteUpdate(BaseModel):
+    nom_complet: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
+
+
+from pydantic import BaseModel, EmailStr, ConfigDict
+
+
+class CompteOut(BaseModel):
+    id: int
+    nom_complet: str
+    email: EmailStr
+    role: str
+    actif: bool
+
+    model_config = ConfigDict(from_attributes=True)

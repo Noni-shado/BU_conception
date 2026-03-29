@@ -36,16 +36,15 @@ export const TableUI = ({
       return renderActions(data);
     }
 
-    if (typeof cel.render === "function") {
-      return cel.render(data);
-    }
-
     if (cel.key === "statut") {
+      const statutValue =
+        typeof cel.render === "function" ? cel.render(data) : data[cel.key];
+
       return (
         <Chip
-          label={getLabel?.(data[cel.key]) ?? "-"}
+          label={getLabel?.(statutValue) ?? "-"}
           variant="filled"
-          color={getColor?.(data[cel.key]) ?? "default"}
+          color={getColor?.(statutValue) ?? "default"}
           size="small"
           sx={{
             fontSize: "0.75rem",
@@ -54,6 +53,10 @@ export const TableUI = ({
           }}
         />
       );
+    }
+
+    if (typeof cel.render === "function") {
+      return cel.render(data);
     }
 
     return data[cel.key] ?? "-";

@@ -5,6 +5,7 @@ import Login from "./pages/authentification/Login";
 import Register from "./pages/authentification/Register";
 import UserProfile from "./pages/user/profil/Profil";
 import BiblioProfile from "./pages/biblio/profil/Profil";
+import AdminProfile from './pages/admin/profil/Profil';
 
 // Bibliothécaire
 import BiblioLayout from "./layout/BiblioLayout";
@@ -18,6 +19,10 @@ import LivresUser from "./pages/user/livres/LivresUser";
 import EmpruntsUser  from "./pages/user/emprunts/Emprunts";
 import Notifications from "./pages/user/notifs/Notifs";
 
+//Admin
+import AdminLayout from "./layout/AdminLayout";
+import Comptes from "./pages/admin/Compte";
+
 // Guard rôle (optionnel mais conseillé)
 import RequireRole from "./components/RequireRole";
 
@@ -30,6 +35,20 @@ export default function App() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+            {/* Dashboard Admin */}
+      <Route
+        path="/admin"
+        element={
+          <RequireRole role="ADMIN">
+            <AdminLayout />
+          </RequireRole>
+        }
+      >
+        <Route index element={<Comptes />} />
+        <Route path="comptes" element={<Comptes />} />
+        <Route path="profile" element={<AdminProfile />} />
+      </Route>
 
       {/* Dashboard Bibliothécaire */}
       <Route

@@ -36,6 +36,8 @@ const goToProfile = () => {
     nav("/biblio/profile");
   } else if (role === "UTILISATEUR") {
     nav("/user/profile");
+  }  else if (role === "ADMIN") {
+    nav("/admin/profile");
   } else {
     nav("/login");
   }
