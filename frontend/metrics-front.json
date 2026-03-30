@@ -1,0 +1,955 @@
+{
+  "summary": {
+    "totalFilesFound": 48,
+    "analysedFiles": 48,
+    "failedFiles": 0,
+    "avgSloc": 110.938,
+    "avgCyclomatic": 14,
+    "avgMaintainability": 118.092
+  },
+  "topCyclomatic": [
+    {
+      "file": "src/pages/biblio/livres/LivreDialogBase.jsx",
+      "sloc": 404,
+      "cyclomatic": 86,
+      "halstead": {
+        "volume": 7653.252,
+        "difficulty": 63.9,
+        "effort": 489042.784
+      },
+      "maintainability": 100.663,
+      "functionsCount": 28
+    },
+    {
+      "file": "src/pages/admin/Compte.jsx",
+      "sloc": 430,
+      "cyclomatic": 61,
+      "halstead": {
+        "volume": 6614.087,
+        "difficulty": 33.643,
+        "effort": 222516.794
+      },
+      "maintainability": 109.829,
+      "functionsCount": 37
+    },
+    {
+      "file": "src/pages/biblio/retours/RetourDialogBase.jsx",
+      "sloc": 339,
+      "cyclomatic": 57,
+      "halstead": {
+        "volume": 5937.785,
+        "difficulty": 41.758,
+        "effort": 247951.186
+      },
+      "maintainability": 103.696,
+      "functionsCount": 24
+    },
+    {
+      "file": "src/pages/biblio/retours/Retours.jsx",
+      "sloc": 280,
+      "cyclomatic": 36,
+      "halstead": {
+        "volume": 4892.772,
+        "difficulty": 28.628,
+        "effort": 140068.614
+      },
+      "maintainability": 111.564,
+      "functionsCount": 27
+    },
+    {
+      "file": "src/components/emprunts/EmpruntListBase.jsx",
+      "sloc": 214,
+      "cyclomatic": 31,
+      "halstead": {
+        "volume": 3814.404,
+        "difficulty": 26.434,
+        "effort": 100830.748
+      },
+      "maintainability": 113.297,
+      "functionsCount": 23
+    },
+    {
+      "file": "src/pages/admin/ModifierCompteDialog.jsx",
+      "sloc": 188,
+      "cyclomatic": 30,
+      "halstead": {
+        "volume": 3060.626,
+        "difficulty": 29.635,
+        "effort": 90702.552
+      },
+      "maintainability": 106.392,
+      "functionsCount": 13
+    },
+    {
+      "file": "src/pages/biblio/livres/Livres.jsx",
+      "sloc": 219,
+      "cyclomatic": 29,
+      "halstead": {
+        "volume": 3044.944,
+        "difficulty": 33.379,
+        "effort": 101637.539
+      },
+      "maintainability": 112.378,
+      "functionsCount": 20
+    },
+    {
+      "file": "src/pages/biblio/emprunts/Emprunts.jsx",
+      "sloc": 213,
+      "cyclomatic": 27,
+      "halstead": {
+        "volume": 2925.123,
+        "difficulty": 28.568,
+        "effort": 83566.154
+      },
+      "maintainability": 110.718,
+      "functionsCount": 17
+    },
+    {
+      "file": "src/components/TableUI/TableUI.jsx",
+      "sloc": 186,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2665.702,
+        "difficulty": 25.821,
+        "effort": 68831.219
+      },
+      "maintainability": 107.619,
+      "functionsCount": 9
+    },
+    {
+      "file": "src/pages/admin/AjouterCompteDialog.jsx",
+      "sloc": 199,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2968.295,
+        "difficulty": 26.786,
+        "effort": 79507.896
+      },
+      "maintainability": 104.691,
+      "functionsCount": 11
+    }
+  ],
+  "topSloc": [
+    {
+      "file": "src/pages/admin/Compte.jsx",
+      "sloc": 430,
+      "cyclomatic": 61,
+      "halstead": {
+        "volume": 6614.087,
+        "difficulty": 33.643,
+        "effort": 222516.794
+      },
+      "maintainability": 109.829,
+      "functionsCount": 37
+    },
+    {
+      "file": "src/pages/biblio/livres/LivreDialogBase.jsx",
+      "sloc": 404,
+      "cyclomatic": 86,
+      "halstead": {
+        "volume": 7653.252,
+        "difficulty": 63.9,
+        "effort": 489042.784
+      },
+      "maintainability": 100.663,
+      "functionsCount": 28
+    },
+    {
+      "file": "src/pages/biblio/retours/RetourDialogBase.jsx",
+      "sloc": 339,
+      "cyclomatic": 57,
+      "halstead": {
+        "volume": 5937.785,
+        "difficulty": 41.758,
+        "effort": 247951.186
+      },
+      "maintainability": 103.696,
+      "functionsCount": 24
+    },
+    {
+      "file": "src/pages/biblio/retours/Retours.jsx",
+      "sloc": 280,
+      "cyclomatic": 36,
+      "halstead": {
+        "volume": 4892.772,
+        "difficulty": 28.628,
+        "effort": 140068.614
+      },
+      "maintainability": 111.564,
+      "functionsCount": 27
+    },
+    {
+      "file": "src/pages/biblio/livres/Livres.jsx",
+      "sloc": 219,
+      "cyclomatic": 29,
+      "halstead": {
+        "volume": 3044.944,
+        "difficulty": 33.379,
+        "effort": 101637.539
+      },
+      "maintainability": 112.378,
+      "functionsCount": 20
+    },
+    {
+      "file": "src/components/emprunts/EmpruntListBase.jsx",
+      "sloc": 214,
+      "cyclomatic": 31,
+      "halstead": {
+        "volume": 3814.404,
+        "difficulty": 26.434,
+        "effort": 100830.748
+      },
+      "maintainability": 113.297,
+      "functionsCount": 23
+    },
+    {
+      "file": "src/pages/biblio/emprunts/Emprunts.jsx",
+      "sloc": 213,
+      "cyclomatic": 27,
+      "halstead": {
+        "volume": 2925.123,
+        "difficulty": 28.568,
+        "effort": 83566.154
+      },
+      "maintainability": 110.718,
+      "functionsCount": 17
+    },
+    {
+      "file": "src/pages/admin/AjouterCompteDialog.jsx",
+      "sloc": 199,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2968.295,
+        "difficulty": 26.786,
+        "effort": 79507.896
+      },
+      "maintainability": 104.691,
+      "functionsCount": 11
+    },
+    {
+      "file": "src/layout/DrawerLayout.jsx",
+      "sloc": 195,
+      "cyclomatic": 14,
+      "halstead": {
+        "volume": 2561.068,
+        "difficulty": 16.667,
+        "effort": 42684.459
+      },
+      "maintainability": 104.613,
+      "functionsCount": 9
+    },
+    {
+      "file": "src/pages/admin/ModifierCompteDialog.jsx",
+      "sloc": 188,
+      "cyclomatic": 30,
+      "halstead": {
+        "volume": 3060.626,
+        "difficulty": 29.635,
+        "effort": 90702.552
+      },
+      "maintainability": 106.392,
+      "functionsCount": 13
+    }
+  ],
+  "topHalsteadVolume": [
+    {
+      "file": "src/pages/biblio/livres/LivreDialogBase.jsx",
+      "sloc": 404,
+      "cyclomatic": 86,
+      "halstead": {
+        "volume": 7653.252,
+        "difficulty": 63.9,
+        "effort": 489042.784
+      },
+      "maintainability": 100.663,
+      "functionsCount": 28
+    },
+    {
+      "file": "src/pages/admin/Compte.jsx",
+      "sloc": 430,
+      "cyclomatic": 61,
+      "halstead": {
+        "volume": 6614.087,
+        "difficulty": 33.643,
+        "effort": 222516.794
+      },
+      "maintainability": 109.829,
+      "functionsCount": 37
+    },
+    {
+      "file": "src/pages/biblio/retours/RetourDialogBase.jsx",
+      "sloc": 339,
+      "cyclomatic": 57,
+      "halstead": {
+        "volume": 5937.785,
+        "difficulty": 41.758,
+        "effort": 247951.186
+      },
+      "maintainability": 103.696,
+      "functionsCount": 24
+    },
+    {
+      "file": "src/pages/biblio/retours/Retours.jsx",
+      "sloc": 280,
+      "cyclomatic": 36,
+      "halstead": {
+        "volume": 4892.772,
+        "difficulty": 28.628,
+        "effort": 140068.614
+      },
+      "maintainability": 111.564,
+      "functionsCount": 27
+    },
+    {
+      "file": "src/components/emprunts/EmpruntListBase.jsx",
+      "sloc": 214,
+      "cyclomatic": 31,
+      "halstead": {
+        "volume": 3814.404,
+        "difficulty": 26.434,
+        "effort": 100830.748
+      },
+      "maintainability": 113.297,
+      "functionsCount": 23
+    },
+    {
+      "file": "src/pages/admin/ModifierCompteDialog.jsx",
+      "sloc": 188,
+      "cyclomatic": 30,
+      "halstead": {
+        "volume": 3060.626,
+        "difficulty": 29.635,
+        "effort": 90702.552
+      },
+      "maintainability": 106.392,
+      "functionsCount": 13
+    },
+    {
+      "file": "src/pages/biblio/livres/Livres.jsx",
+      "sloc": 219,
+      "cyclomatic": 29,
+      "halstead": {
+        "volume": 3044.944,
+        "difficulty": 33.379,
+        "effort": 101637.539
+      },
+      "maintainability": 112.378,
+      "functionsCount": 20
+    },
+    {
+      "file": "src/pages/admin/AjouterCompteDialog.jsx",
+      "sloc": 199,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2968.295,
+        "difficulty": 26.786,
+        "effort": 79507.896
+      },
+      "maintainability": 104.691,
+      "functionsCount": 11
+    },
+    {
+      "file": "src/pages/biblio/emprunts/Emprunts.jsx",
+      "sloc": 213,
+      "cyclomatic": 27,
+      "halstead": {
+        "volume": 2925.123,
+        "difficulty": 28.568,
+        "effort": 83566.154
+      },
+      "maintainability": 110.718,
+      "functionsCount": 17
+    },
+    {
+      "file": "src/components/livres/LivresListBase.jsx",
+      "sloc": 155,
+      "cyclomatic": 23,
+      "halstead": {
+        "volume": 2736.557,
+        "difficulty": 32.04,
+        "effort": 87679.905
+      },
+      "maintainability": 110.872,
+      "functionsCount": 15
+    }
+  ],
+  "results": [
+    {
+      "file": "src/App.jsx",
+      "sloc": 90,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 95.908,
+        "difficulty": 1.313,
+        "effort": 125.88
+      },
+      "maintainability": 156.834,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/main.jsx",
+      "sloc": 18,
+      "cyclomatic": 1,
+      "halstead": {
+        "volume": 41.209,
+        "difficulty": 1,
+        "effort": 41.209
+      },
+      "maintainability": 140.485,
+      "functionsCount": 0
+    },
+    {
+      "file": "src/theme.js",
+      "sloc": 13,
+      "cyclomatic": 1,
+      "halstead": {
+        "volume": 199.705,
+        "difficulty": 4,
+        "effort": 798.821
+      },
+      "maintainability": 107.888,
+      "functionsCount": 0
+    },
+    {
+      "file": "src/api/http.js",
+      "sloc": 15,
+      "cyclomatic": 4,
+      "halstead": {
+        "volume": 274.019,
+        "difficulty": 8.056,
+        "effort": 2207.377
+      },
+      "maintainability": 114.821,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/AppSnackBar.jsx",
+      "sloc": 28,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 144.946,
+        "difficulty": 4.2,
+        "effort": 608.775
+      },
+      "maintainability": 133.646,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/AuthShell.jsx",
+      "sloc": 38,
+      "cyclomatic": 3,
+      "halstead": {
+        "volume": 401.816,
+        "difficulty": 3.943,
+        "effort": 1584.305
+      },
+      "maintainability": 112.172,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/ConfirmDialog.jsx",
+      "sloc": 143,
+      "cyclomatic": 7,
+      "halstead": {
+        "volume": 1375.221,
+        "difficulty": 11.664,
+        "effort": 16041.101
+      },
+      "maintainability": 87.859,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/Header.jsx",
+      "sloc": 79,
+      "cyclomatic": 11,
+      "halstead": {
+        "volume": 1093.66,
+        "difficulty": 13.377,
+        "effort": 14629.943
+      },
+      "maintainability": 109.638,
+      "functionsCount": 4
+    },
+    {
+      "file": "src/components/RequireRole.jsx",
+      "sloc": 10,
+      "cyclomatic": 3,
+      "halstead": {
+        "volume": 127.438,
+        "difficulty": 7.65,
+        "effort": 974.899
+      },
+      "maintainability": 125.061,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/UserMenu.jsx",
+      "sloc": 105,
+      "cyclomatic": 9,
+      "halstead": {
+        "volume": 942,
+        "difficulty": 10.706,
+        "effort": 10084.941
+      },
+      "maintainability": 111.507,
+      "functionsCount": 5
+    },
+    {
+      "file": "src/layout/AdminLayout.jsx",
+      "sloc": 22,
+      "cyclomatic": 3,
+      "halstead": {
+        "volume": 91.738,
+        "difficulty": 4.8,
+        "effort": 440.344
+      },
+      "maintainability": 138.048,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/layout/BiblioLayout.jsx",
+      "sloc": 24,
+      "cyclomatic": 3,
+      "halstead": {
+        "volume": 189.99,
+        "difficulty": 7.071,
+        "effort": 1343.498
+      },
+      "maintainability": 125.168,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/layout/DrawerLayout.jsx",
+      "sloc": 195,
+      "cyclomatic": 14,
+      "halstead": {
+        "volume": 2561.068,
+        "difficulty": 16.667,
+        "effort": 42684.459
+      },
+      "maintainability": 104.613,
+      "functionsCount": 9
+    },
+    {
+      "file": "src/layout/UserLayout.jsx",
+      "sloc": 24,
+      "cyclomatic": 3,
+      "halstead": {
+        "volume": 189.99,
+        "difficulty": 7.071,
+        "effort": 1343.498
+      },
+      "maintainability": 125.168,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/components/emprunts/EmpruntListBase.jsx",
+      "sloc": 214,
+      "cyclomatic": 31,
+      "halstead": {
+        "volume": 3814.404,
+        "difficulty": 26.434,
+        "effort": 100830.748
+      },
+      "maintainability": 113.297,
+      "functionsCount": 23
+    },
+    {
+      "file": "src/components/searchBar/SearchBar.jsx",
+      "sloc": 42,
+      "cyclomatic": 4,
+      "halstead": {
+        "volume": 379.839,
+        "difficulty": 10.862,
+        "effort": 4125.832
+      },
+      "maintainability": 130.109,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/components/livres/LivresListBase.jsx",
+      "sloc": 155,
+      "cyclomatic": 23,
+      "halstead": {
+        "volume": 2736.557,
+        "difficulty": 32.04,
+        "effort": 87679.905
+      },
+      "maintainability": 110.872,
+      "functionsCount": 15
+    },
+    {
+      "file": "src/components/TableUI/Header.jsx",
+      "sloc": 15,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 80,
+        "difficulty": 3.9,
+        "effort": 312
+      },
+      "maintainability": 142.501,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/components/TableUI/TableFilter.jsx",
+      "sloc": 29,
+      "cyclomatic": 4,
+      "halstead": {
+        "volume": 260.056,
+        "difficulty": 8,
+        "effort": 2080.448
+      },
+      "maintainability": 136.474,
+      "functionsCount": 3
+    },
+    {
+      "file": "src/components/TableUI/TableUI.jsx",
+      "sloc": 186,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2665.702,
+        "difficulty": 25.821,
+        "effort": 68831.219
+      },
+      "maintainability": 107.619,
+      "functionsCount": 9
+    },
+    {
+      "file": "src/pages/admin/AjouterCompteDialog.jsx",
+      "sloc": 199,
+      "cyclomatic": 26,
+      "halstead": {
+        "volume": 2968.295,
+        "difficulty": 26.786,
+        "effort": 79507.896
+      },
+      "maintainability": 104.691,
+      "functionsCount": 11
+    },
+    {
+      "file": "src/pages/admin/Compte.jsx",
+      "sloc": 430,
+      "cyclomatic": 61,
+      "halstead": {
+        "volume": 6614.087,
+        "difficulty": 33.643,
+        "effort": 222516.794
+      },
+      "maintainability": 109.829,
+      "functionsCount": 37
+    },
+    {
+      "file": "src/pages/admin/DetailsCompteDialog.jsx",
+      "sloc": 91,
+      "cyclomatic": 7,
+      "halstead": {
+        "volume": 679.526,
+        "difficulty": 7.957,
+        "effort": 5407.29
+      },
+      "maintainability": 101.804,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/pages/admin/ModifierCompteDialog.jsx",
+      "sloc": 188,
+      "cyclomatic": 30,
+      "halstead": {
+        "volume": 3060.626,
+        "difficulty": 29.635,
+        "effort": 90702.552
+      },
+      "maintainability": 106.392,
+      "functionsCount": 13
+    },
+    {
+      "file": "src/pages/authentification/Login.jsx",
+      "sloc": 126,
+      "cyclomatic": 16,
+      "halstead": {
+        "volume": 1533.037,
+        "difficulty": 20.113,
+        "effort": 30833.478
+      },
+      "maintainability": 107.504,
+      "functionsCount": 6
+    },
+    {
+      "file": "src/pages/authentification/Register.jsx",
+      "sloc": 128,
+      "cyclomatic": 11,
+      "halstead": {
+        "volume": 1437.613,
+        "difficulty": 14.795,
+        "effort": 21268.792
+      },
+      "maintainability": 110.328,
+      "functionsCount": 6
+    },
+    {
+      "file": "src/pages/biblio/utils.js",
+      "sloc": 34,
+      "cyclomatic": 1,
+      "halstead": {
+        "volume": 456.65,
+        "difficulty": 5.104,
+        "effort": 2330.819
+      },
+      "maintainability": 90.5,
+      "functionsCount": 0
+    },
+    {
+      "file": "src/pages/commun/Profile.jsx",
+      "sloc": 59,
+      "cyclomatic": 4,
+      "halstead": {
+        "volume": 364.662,
+        "difficulty": 6.911,
+        "effort": 2520.073
+      },
+      "maintainability": 112.205,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/pages/admin/profil/Profil.jsx",
+      "sloc": 11,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 4.755,
+        "difficulty": 1,
+        "effort": 4.755
+      },
+      "maintainability": 168.038,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/pages/biblio/emprunts/DeclinerEmpruntDialog.jsx",
+      "sloc": 56,
+      "cyclomatic": 8,
+      "halstead": {
+        "volume": 477.25,
+        "difficulty": 12.848,
+        "effort": 6131.944
+      },
+      "maintainability": 127.364,
+      "functionsCount": 4
+    },
+    {
+      "file": "src/pages/biblio/emprunts/DetailsEmpruntDialog.jsx",
+      "sloc": 138,
+      "cyclomatic": 11,
+      "halstead": {
+        "volume": 1236.758,
+        "difficulty": 15.068,
+        "effort": 18635.689
+      },
+      "maintainability": 98.698,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/biblio/emprunts/Emprunts.jsx",
+      "sloc": 213,
+      "cyclomatic": 27,
+      "halstead": {
+        "volume": 2925.123,
+        "difficulty": 28.568,
+        "effort": 83566.154
+      },
+      "maintainability": 110.718,
+      "functionsCount": 17
+    },
+    {
+      "file": "src/pages/biblio/livres/AjouterLivreDialog.jsx",
+      "sloc": 47,
+      "cyclomatic": 8,
+      "halstead": {
+        "volume": 677.263,
+        "difficulty": 14.357,
+        "effort": 9723.558
+      },
+      "maintainability": 105.62,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/biblio/livres/DetailsLivreDialog.jsx",
+      "sloc": 14,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 43.185,
+        "difficulty": 4,
+        "effort": 172.74
+      },
+      "maintainability": 149.183,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/pages/biblio/livres/LivreDialogBase.jsx",
+      "sloc": 404,
+      "cyclomatic": 86,
+      "halstead": {
+        "volume": 7653.252,
+        "difficulty": 63.9,
+        "effort": 489042.784
+      },
+      "maintainability": 100.663,
+      "functionsCount": 28
+    },
+    {
+      "file": "src/pages/biblio/livres/Livres.jsx",
+      "sloc": 219,
+      "cyclomatic": 29,
+      "halstead": {
+        "volume": 3044.944,
+        "difficulty": 33.379,
+        "effort": 101637.539
+      },
+      "maintainability": 112.378,
+      "functionsCount": 20
+    },
+    {
+      "file": "src/pages/biblio/livres/ModifierLivreDialog.jsx",
+      "sloc": 51,
+      "cyclomatic": 9,
+      "halstead": {
+        "volume": 769.941,
+        "difficulty": 18.25,
+        "effort": 14051.432
+      },
+      "maintainability": 103.163,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/biblio/retours/DetailsRetourDialog.jsx",
+      "sloc": 128,
+      "cyclomatic": 8,
+      "halstead": {
+        "volume": 1153.089,
+        "difficulty": 14.689,
+        "effort": 16937.172
+      },
+      "maintainability": 98.923,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/biblio/retours/NotifierRetourDialog.jsx",
+      "sloc": 136,
+      "cyclomatic": 15,
+      "halstead": {
+        "volume": 1340.132,
+        "difficulty": 17.91,
+        "effort": 24002.369
+      },
+      "maintainability": 104.961,
+      "functionsCount": 4
+    },
+    {
+      "file": "src/pages/biblio/retours/RetourDialogBase.jsx",
+      "sloc": 339,
+      "cyclomatic": 57,
+      "halstead": {
+        "volume": 5937.785,
+        "difficulty": 41.758,
+        "effort": 247951.186
+      },
+      "maintainability": 103.696,
+      "functionsCount": 24
+    },
+    {
+      "file": "src/pages/biblio/retours/Retours.jsx",
+      "sloc": 280,
+      "cyclomatic": 36,
+      "halstead": {
+        "volume": 4892.772,
+        "difficulty": 28.628,
+        "effort": 140068.614
+      },
+      "maintainability": 111.564,
+      "functionsCount": 27
+    },
+    {
+      "file": "src/pages/biblio/profil/Profil.jsx",
+      "sloc": 11,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 4.755,
+        "difficulty": 1,
+        "effort": 4.755
+      },
+      "maintainability": 168.038,
+      "functionsCount": 1
+    },
+    {
+      "file": "src/pages/user/emprunts/Emprunts.jsx",
+      "sloc": 74,
+      "cyclomatic": 8,
+      "halstead": {
+        "volume": 872.839,
+        "difficulty": 11.411,
+        "effort": 9960.065
+      },
+      "maintainability": 117.4,
+      "functionsCount": 6
+    },
+    {
+      "file": "src/pages/user/livres/DemanderEmpruntDialog.jsx",
+      "sloc": 101,
+      "cyclomatic": 6,
+      "halstead": {
+        "volume": 618.294,
+        "difficulty": 9.846,
+        "effort": 6087.821
+      },
+      "maintainability": 111.985,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/user/livres/LivresUser.jsx",
+      "sloc": 167,
+      "cyclomatic": 24,
+      "halstead": {
+        "volume": 2402.073,
+        "difficulty": 25.987,
+        "effort": 62423.875
+      },
+      "maintainability": 110.975,
+      "functionsCount": 14
+    },
+    {
+      "file": "src/pages/user/notifs/DetailsNotificationDialog.jsx",
+      "sloc": 77,
+      "cyclomatic": 4,
+      "halstead": {
+        "volume": 595.704,
+        "difficulty": 8.488,
+        "effort": 5056.217
+      },
+      "maintainability": 109.118,
+      "functionsCount": 2
+    },
+    {
+      "file": "src/pages/user/notifs/Notifs.jsx",
+      "sloc": 148,
+      "cyclomatic": 16,
+      "halstead": {
+        "volume": 2411.495,
+        "difficulty": 25.165,
+        "effort": 60684.558
+      },
+      "maintainability": 110.868,
+      "functionsCount": 13
+    },
+    {
+      "file": "src/pages/user/profil/Profil.jsx",
+      "sloc": 11,
+      "cyclomatic": 2,
+      "halstead": {
+        "volume": 4.755,
+        "difficulty": 1,
+        "effort": 4.755
+      },
+      "maintainability": 168.038,
+      "functionsCount": 1
+    }
+  ],
+  "errors": []
+}
